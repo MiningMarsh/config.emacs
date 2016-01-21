@@ -1,0 +1,12 @@
+*
+!*/
+!.gitignore
+!.stow-global-ignore
+!.emacs.d/config/
+!.emacs.d/lib/
+!.emacs.d/theme/
+!.emacs.d/init.el
+!*.el
+!*.el.disabled
+*.elc
+.emacs.d/config/erc/accounts.el
