@@ -1,5 +1,6 @@
 *
-!*/
+*/
+.emacs.d
 !.gitignore
 !.stow-global-ignore
 !.emacs.d/config/
