@@ -82,7 +82,7 @@
 	   (lambda (path)
 	     (when (is-elisp-file path)
 	       (compile-file path)))
-	   path))
+	   (format "~/.emacs.d/%s/" path)))
 	'("lib"
 	  "theme"))
 
