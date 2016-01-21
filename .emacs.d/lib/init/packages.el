@@ -24,6 +24,7 @@
 	  evil-paredit
 	  flx-ido
 	  flycheck
+	  relative-line-numbers
 	  key-chord
 	  rainbow-delimiters
 	  xclip
