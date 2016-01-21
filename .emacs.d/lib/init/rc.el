@@ -271,6 +271,16 @@
   (-> (current-emacs-client)
       server-delete-client))
 
+(defmacro with-ignored-errors (&rest body)
+  "Ignore errors in the wrapped BODY."
+  `(unwind-protect
+       (let (retval)
+	 (condition-case ex
+	     (setq retval (progn ,@body))
+	   ('error
+	    (setq retval (cons 'exception (list ex)))))
+	 retval)))
+
 ;; Signal that RC has been loaded.
 (provide 'rc)
 

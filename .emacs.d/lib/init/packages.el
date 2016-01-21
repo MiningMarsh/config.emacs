@@ -35,13 +35,14 @@
 	  smartparens)
 
 	;; Actually load those packages.
-	(let1 refresh t
-	      (dolist (p packages)
-		(when (not (package-installed-p p))
-		  (when refresh
-		    (setq refresh nil)
-		    (package-refresh-contents))
-		  (package-install p)))))
+	(with-ignored-errors
+	 (let1 refresh t
+	       (dolist (p packages)
+		 (when (not (package-installed-p p))
+		   (when refresh
+		     (setq refresh nil)
+		     (package-refresh-contents))
+		   (package-install p))))))
 
   ;; Manually load some packages.
   (load (expand-file-name "~/.quicklisp/slime-helper.el")))
