@@ -278,8 +278,24 @@
 	 (condition-case ex
 	     (setq retval (progn ,@body))
 	   ('error
-	    (setq retval (cons 'exception (list ex)))))
+	    (setq retval nil)))
 	 retval)))
+
+(defmacro with-finally (fn &rest body)
+  "Ignore errors in the wrapped FN, executing BODY as finally."
+  `(unwind-protect
+       (let (retval)
+	 (condition-case ex
+	     (setq retval (progn ,fn))
+	   ('error
+	    (setq retval nil)))
+	 retval)
+     ,@body))
+
+(defmacro with-finally-returned (fn &rest body)
+  "Ignore errors in the wrapped FN, executing and returning BODY as finally."
+  `(progn (with-ignored-errors ,fn)
+	  ,@body))
 
 ;; Signal that RC has been loaded.
 (provide 'rc)
