@@ -55,6 +55,10 @@
   ;; Only recompile the init file if needed.
   (compile-file "~/.emacs.d/init.el")
 
+  ;; Make the compiled cached directory if needed.
+  (when (not (file-directory-p "~/.emacs.d/compiled"))
+	(make-directory "~/.emacs.d/compiled"))
+
   ;; Distro specific emacs library code.
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
