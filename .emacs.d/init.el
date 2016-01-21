@@ -21,18 +21,18 @@
 
      (needs-recompile (path compiled)
 		      "Checks if a file needs to be re-compiled."
-		      (or (not (file-exists-p compiled))
-			  (file-newer-than-file-p path compiled)))
+		      (file-newer-than-file-p path compiled))
 
      (compile-and-load (path compiled &optional load)
 		       "Compiles and loads a file."
 		       (if (needs-recompile path compiled)
 			   (progn (byte-compile-file path load)
-				  (when (not (string= compiled (concat path "c")))
-					(rename-file (concat path "c") compiled)))
+				  (let ((local (concat path "c")))
+					(when (not (string= compiled local))
+					  (rename-file local compiled))))
 			 (when load (load-file compiled))))
 
-     (is-elisp-file (path)
+     (elisp-filep (path)
 		    "Returns whether the path is elisp."
 		    (and path
 			 (not (file-directory-p path))
@@ -40,24 +40,24 @@
 
      (compile-file (path &optional load)
 		   "Recompiles a file if needed."
-		   (let ((compiled (concat path "c")))
-		     (compile-and-load path compiled load)))
+		   (compile-and-load path (concat path "c") load))
 
      (compile-file-cached (path &optional load)
 			  "Compiles a file and puts it in the storage cache."
-			  (let ((compiled
-				 (format "~/.emacs.d/compiled/%s"
-					 (replace-regexp-in-string
-					  "/" "!"
-					  (concat path "c")))))
-			    (compile-and-load path compiled load))))
+			  (compile-and-load
+			   path
+			   (format "~/.emacs.d/compiled/%sc"
+				   (replace-regexp-in-string
+				    "/" "!"
+				    path))
+			   load)))
 
   ;; Only recompile the init file if needed.
   (compile-file "~/.emacs.d/init.el")
 
   ;; Make the compiled cached directory if needed.
   (when (not (file-directory-p "~/.emacs.d/compiled"))
-	(make-directory "~/.emacs.d/compiled"))
+    (make-directory "~/.emacs.d/compiled"))
 
   ;; Distro specific emacs library code.
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
@@ -80,7 +80,7 @@
   (mapc (lambda (path)
 	  (map-dir
 	   (lambda (path)
-	     (when (is-elisp-file path)
+	     (when (elisp-filep path)
 	       (compile-file path)))
 	   (format "~/.emacs.d/%s/" path)))
 	'("lib"
@@ -89,7 +89,7 @@
   ;; Load files.
   (map-dir
    (lambda (path)
-     (when (is-elisp-file path)
+     (when (elisp-filep path)
        (compile-file-cached path t)))
    "~/.emacs.d/config/")
 
