@@ -42,8 +42,6 @@
 		   (when refresh
 		     (setq refresh nil)
 		     (package-refresh-contents))
-		   (package-install p))))))
+		   (package-install p)))))))
 
-  ;; Manually load some packages.
-  (load (expand-file-name "~/.quicklisp/slime-helper.el")))
 ;;; packages.el ends here
