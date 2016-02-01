@@ -3,6 +3,7 @@
 ;;; Stolen almost verbatim from Bryan, tweaked to use rc.el stuff.
 ;;; Code:
 (require 'rc)
+
 (defeat packages (cl package)
 
   ;; Add package repositories.
@@ -16,34 +17,38 @@
 
   ;; The packages I want.
   (let1 packages
-	'(elpy
+	'(color-theme
+	  elpy
+	  erc-image
+	  erc-yt
 	  evil
 	  evil-leader
-	  nyan-mode
 	  evil-org
 	  evil-paredit
 	  flx-ido
 	  flycheck
-	  relative-line-numbers
+	  jabber
 	  key-chord
+	  nyan-mode
 	  rainbow-delimiters
-	  xclip
-	  color-theme
+	  relative-line-numbers
 	  rudel
 	  slime
 	  smart-mode-line
-	  smartparens)
+	  smart-mode-line-powerline-theme
+	  smartparens
+	  xclip)
 
 	;; Actually load those packages.
-	(with-ignored-errors
-	 (let1 refresh t
-	       (dolist (p packages)
-		 (when (not (package-installed-p p))
-		   (when refresh
-		     (setq refresh nil)
-		     (package-refresh-contents))
-		   (package-install p))))))
+	(let1 refresh t
+	      (dolist (p packages)
+		(when (not (package-installed-p p))
+		  (when refresh
+		    (setq refresh nil)
+		    (package-refresh-contents))
+		  (with-ignored-errors (package-install p))))))
 
   ;; Manually load some packages.
-  (load (expand-file-name "~/.quicklisp/slime-helper.el")))
+  (with-ignored-errors
+   (load (expand-file-name "~/.quicklisp/slime-helper.el"))))
 ;;; packages.el ends here

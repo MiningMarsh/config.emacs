@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil-leader)
+(requiring (evil evil-leader paredit)
 	   (evil-leader/set-key-for-mode 'emacs-lisp-mode
 	     "(" 'paredit-open-round
 	     ")" 'paredit-close-round
@@ -15,7 +15,10 @@
 	     "X" 'paredit-backward-kill-word
 	     "b" 'paredit-forward-barf-sexp
 	     "d" 'paredit-forward-delete
-	     "e" 'eval-buffer
+	     "e" (lambda (&rest args)
+			   (interactive)
+			   (eval-buffer)
+			   (message "Buffer evaluated."))
 	     "h" 'paredit-split-sexp
 	     "j" 'paredit-forward
 	     "k" 'paredit-backward

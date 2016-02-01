@@ -49,6 +49,15 @@
 
 			      ;; Actually apply test and filter.
 			      (when (funcall test message)
+				(if (not taken)
+				    (setq message
+					  (mklist (funcall result message)))
+				  (let1 new-message nil
+					(dolist (part message)
+					  (setq new-message
+						(append new-message
+						       (mklist
+							(funcall result part)))))))
 				(setq message (funcall result message))
 				(setq taken t))))
 	    (if taken

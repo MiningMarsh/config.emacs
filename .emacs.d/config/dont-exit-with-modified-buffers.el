@@ -1,5 +1,7 @@
 ;;; dont-exit-with-modified-buffers --- Don't bother me about saving buffers.
 ;;; Commentary:
+;;; This is a dirty hack, make sure to keep the string constants in line with
+;;; the current version of Emacs.
 ;;; Code:
 (require 'rc)
 

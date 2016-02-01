@@ -26,9 +26,14 @@
      (compile-and-load (path compiled &optional load)
 		       "Compiles and loads a file."
 		       (if (needs-recompile path compiled)
-			   (progn (byte-compile-file path load)
-				  (let ((local (concat path "c")))
+			   (progn
+				(let ((local (concat path "c")))
+				  (when (file-exists-p local)
+					(delete-file local))
+				 (byte-compile-file path load)
 					(when (not (string= compiled local))
+					  (when (file-exists-p compiled)
+						(delete-file compiled))
 					  (rename-file local compiled))))
 			 (when load (load-file compiled))))
 

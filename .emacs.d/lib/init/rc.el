@@ -56,14 +56,19 @@
   "Returns the compiled file path for file."
   (format "%sc" path))
 
+(cl-defmacro save-buffer-info (&rest body)
+  "Saves information about the current buffer, runs body, and restores info."
+  `(save-excursion
+	 (save-restriction
+	   ,@body)))
+
 (defun buffer-starts-with (regex)
   "Returns whether the current buffer starts with a regex."
-  (save-excursion
-    (save-restriction
-      (widen)
-      (goto-char (point-min))
-      (save-match-data
-	(looking-at regex)))))
+  (save-buffer-info
+	(widen)
+	(goto-char (point-min))
+	(save-match-data
+	  (looking-at regex))))
 
 (defun buffer-is-script ()
   "Returns whether the current buffer is a script."
@@ -242,11 +247,22 @@
       (assoc map)
       cdr))
 
+(defun extract-line-number (line-str)
+  "Return line number represented by LINE-STR."
+  (-> line-str
+	  (cl-subseq 5)
+	  string-to-number))
+
 (defun current-line-number ()
   "Return the current line number."
   (-> (what-line)
-      (cl-subseq 5)
-      string-to-number))
+	  extract-line-number))
+
+(defun lines-in-buffer ()
+  "Return the number of lines in the current buffer."
+  (save-buffer-info
+   (end-of-buffer)
+   (current-line-number)))
 
 (defmacro defwrap (name args-list &rest body)
   "Define a wrapper function for function NAME, taking arguments ARGS-LIST, with code body of BODY.  The original function is implicitly bound to the name NAME in the code body."
@@ -296,6 +312,17 @@
   "Ignore errors in the wrapped FN, executing and returning BODY as finally."
   `(progn (with-ignored-errors ,fn)
 	  ,@body))
+
+(defun play-youtube (url)
+  "Plays a youtube video URL."
+  (start-process url url "mpv" url))
+
+(defun remove-from-list (list element &optional compare-fn)
+  "Remove from LIST ELEMENT, using COMPARE-FN."
+  (set list (cl-delete-if
+	     (lambda (e)
+	       (funcall (if compare-fn compare-fn #'equal) element e))
+	     (eval list))))
 
 ;; Signal that RC has been loaded.
 (provide 'rc)

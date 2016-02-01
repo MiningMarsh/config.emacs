@@ -5,7 +5,7 @@
 
 (requiring (paredit)
 
-	   ;; Enable paredir for various modes.
+	   ;; Enable paredit for various modes.
 	   (add-hooks (emacs-lisp-mode-hook
 		       eval-expression-minibuffer-setup-hook
 		       ielm-mode-hook
