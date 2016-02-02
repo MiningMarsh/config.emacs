@@ -57,50 +57,62 @@
 				    path))
 			   load)))
 
-  ;; Only recompile the init file if needed.
-  (compile-file "~/.emacs.d/init.el")
+  (cl-macrolet ((with-ignored-errors (&rest body)
+		  "Ignore errors in the wrapped BODY."
+		  `(unwind-protect
+		       (let (retval)
+			 (condition-case ex
+			     (setq retval (progn ,@body))
+			   ('error
+			    (message "Failed to load file.")
+			    (setq retval nil)))
+			 retval))))
 
-  ;; Make the compiled cached directory if needed.
-  (when (not (file-directory-p "~/.emacs.d/compiled"))
-    (make-directory "~/.emacs.d/compiled"))
 
-  ;; Distro specific emacs library code.
-  (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
+    ;; Only recompile the init file if needed.
+    (compile-file "~/.emacs.d/init.el")
 
-  ;; Setup the library path.
-  (map-dir
-   (lambda (path)
-     (when (file-directory-p path)
-       (add-to-list 'load-path path)))
-   "~/.emacs.d/lib/")
+    ;; Make the compiled cached directory if needed.
+    (when (not (file-directory-p "~/.emacs.d/compiled"))
+      (make-directory "~/.emacs.d/compiled"))
 
-  ;; Setup the themepath.
-  (map-dir
-   (lambda (path)
-     (when (file-directory-p path)
-       (add-to-list 'custom-theme-load-path path)))
-   "~/.emacs.d/theme/")
+    ;; Distro specific emacs library code.
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
-  ;; Byte compile everything.
-  (mapc (lambda (path)
-	  (map-dir
-	   (lambda (path)
-	     (when (elisp-filep path)
-	       (compile-file path)))
-	   (format "~/.emacs.d/%s/" path)))
-	'("lib"
-	  "theme"))
+    ;; Setup the library path.
+    (map-dir
+     (lambda (path)
+       (when (file-directory-p path)
+	 (add-to-list 'load-path path)))
+     "~/.emacs.d/lib/")
 
-  ;; Load files.
-  (map-dir
-   (lambda (path)
-     (when (elisp-filep path)
-       (compile-file-cached path t)))
-   "~/.emacs.d/config/")
+    ;; Setup the themepath.
+    (map-dir
+     (lambda (path)
+       (when (file-directory-p path)
+	 (add-to-list 'custom-theme-load-path path)))
+     "~/.emacs.d/theme/")
 
-  ;; Clear the message buffer.
-  (message "")
+    ;; Byte compile everything.
+    (mapc (lambda (path)
+	    (map-dir
+	     (lambda (path)
+	       (when (elisp-filep path)
+		 (with-ignored-errors (compile-file path))))
+	     (format "~/.emacs.d/%s/" path)))
+	  '("lib"
+	    "theme"))
 
-  ;; Signal that init has finished.
-  (provide 'init))
+    ;; Load files.
+    (map-dir
+     (lambda (path)
+       (when (elisp-filep path)
+	 (with-ignored-errors (compile-file-cached path t))))
+     "~/.emacs.d/config/")
+
+    ;; Clear the message buffer.
+    (message "")
+
+    ;; Signal that init has finished.
+    (provide 'init)))
 ;;; init.el ends here
