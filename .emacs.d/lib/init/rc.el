@@ -308,6 +308,15 @@
 	 retval)
      ,@body))
 
+(defmacro on-error (fn &rest body)
+  "Execute FN, and if it encounters an error, run BODY."
+  `(let1 no-error nil
+	 (with-ignored-errors
+	  (progn ,fn
+		 (setq no-error t)))
+	 (when (not no-error)
+	     ,@body)))
+
 (defmacro with-finally-returned (fn &rest body)
   "Ignore errors in the wrapped FN, executing and returning BODY as finally."
   `(progn (with-ignored-errors ,fn)

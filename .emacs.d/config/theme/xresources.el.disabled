@@ -1,0 +1,13 @@
+;;; xresources --- Enable xresources based theme on X window system.
+;;; Commentary:
+;;; Code:
+(require 'rc)
+
+;; TODO: Fix add-hooks so it can handle irregular hooks like these.
+(add-hook 'after-make-frame-functions
+	  (lambda (frame)
+	    (select-frame frame)
+	    (when (eq (window-system frame) 'x)
+	      (load-theme 'xresources t))))
+
+;;; xresources.el ends here

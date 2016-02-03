@@ -17,16 +17,25 @@
 
   ;; The packages I want.
   (let1 packages
-	'(color-theme
+	'(auto-complete
+	  color-theme
 	  elpy
 	  erc-image
 	  erc-yt
 	  evil
+	  ac-helm
+	  helm
 	  evil-leader
 	  evil-org
 	  evil-paredit
+	  eyebrowse
+	  ido-ubiquitous
+	  ido-grid-mode
+	  ido-yes-or-no
 	  flx-ido
+	  smex
 	  flycheck
+	  fuzzy
 	  jabber
 	  key-chord
 	  nyan-mode
