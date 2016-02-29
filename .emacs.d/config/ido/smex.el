@@ -1,5 +1,6 @@
 ;;; smex --- Enable smex.
 ;;; Commentary:
+;;; Smex promotes frequently used results in ido.
 ;;; Code:
 (require 'rc)
 

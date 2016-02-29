@@ -57,5 +57,5 @@
 				(setq result (format "%s" result)))))
 	    (if (not result)
 		(message nil)
-	      (message result))))))
+	      (message "%s" result))))))
 ;;; message-filter.el ends here

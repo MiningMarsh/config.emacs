@@ -3,8 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (paredit)
-
+(requiring (flycheck paredit)
 	   ;; Enable paredit for various modes.
 	   (add-hooks (emacs-lisp-mode-hook
 		       eval-expression-minibuffer-setup-hook

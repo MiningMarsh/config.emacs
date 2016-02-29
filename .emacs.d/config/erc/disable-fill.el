@@ -4,5 +4,8 @@
 (require 'rc)
 
 (requiring (erc)
-	   (remove-from-list 'erc-modules 'fill))
+	   (remove-from-list 'erc-modules 'fill)
+	   (erc-fill-mode 0)
+	   (remove-from-list 'erc-modules 'stamp)
+	   (erc-stamp-mode 0))
 ;;; disable-fill.el ends here

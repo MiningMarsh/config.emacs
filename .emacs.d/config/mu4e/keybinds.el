@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil evil-leader mu4e)
+(requiring (evil evil-leader mu4e mu4e-fixes mu4e-accounts)
 	    ;;(evil-define-key 'normal 'mu4e-headers-mode-map
 	      ;;(kbd "RET") 'mu4e-headers-view-message
 	      ;;"j" 'mu4e-headers-next
@@ -25,6 +25,7 @@
 
 	    (evil-leader/set-key-for-mode 'mu4e-headers-mode
 	      (kbd "RET") 'mu4e-headers-view-message
+	      "s" 'switch-mu4e-account
 	      "j" 'mu4e~headers-jump-to-maildir
 	      "r" 'mu4e-compose-reply
 	      "f" 'mu4e-compose-forward
@@ -37,5 +38,6 @@
 	    (evil-leader/set-key-for-mode 'mu4e-compose-mode
 	      "c" 'message-send-and-exit
 	      "e" 'mml-secure-message-sign-encrypt
-	      "s" 'mml-secure-message-sign))
+	      "s" 'mml-secure-message-sign
+	      "S" 'switch-mu4e-account))
 ;;; keybinds.el ends here

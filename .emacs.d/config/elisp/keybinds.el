@@ -17,7 +17,8 @@
 	     "d" 'paredit-forward-delete
 	     "e" (lambda (&rest args)
 			   (interactive)
-			   (eval-buffer)
+			   (with-temp-message "Buffer evaluating..."
+				 (eval-buffer))
 			   (message "Buffer evaluated."))
 	     "h" 'paredit-split-sexp
 	     "j" 'paredit-forward

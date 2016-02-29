@@ -1,4 +1,4 @@
-;;; tabs-in-c-mode --- Enable tabs in C mode.
+;;; tabs.el --- Enable tabs in C mode.
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
@@ -8,4 +8,4 @@
 			 c-basic-offset 4
 			 tab-width 4
 			 indent-tabs-mode t))
-;;; tabs-in-c-mode.el ends here
+;;; tabs.el ends here

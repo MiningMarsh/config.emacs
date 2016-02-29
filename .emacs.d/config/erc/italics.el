@@ -4,5 +4,5 @@
 (require 'rc)
 
 (requiring (erc erc-input-hooks)
-	   (erc-add-input-hook "_\\(.*\\)_" (format "%c\\1%c" 29 29)))
+	   (erc-add-input-hook "\\[ITAL\\]\\(.*\\)\\[ITAL\\]" (format "%c\\1%c" 29 29)))
 ;;; italics.el ends here

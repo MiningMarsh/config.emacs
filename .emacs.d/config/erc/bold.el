@@ -4,5 +4,5 @@
 (require 'rc)
 
 (requiring (erc erc-input-hooks)
-	   (erc-add-input-hook "\\*\\(.*\\)\\*" (format "%c\\1%c" 2 2)))
+	   (erc-add-input-hook "\\[BOLD\\]\\(.*\\)\\[BOLD\\]" (format "%c\\1%c" 2 2)))
 ;;; bold.el ends here

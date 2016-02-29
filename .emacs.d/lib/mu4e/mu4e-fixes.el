@@ -6,7 +6,7 @@
 
 (defeat mu4e-fixes (mu4e)
 
-	   (defun mu4e-headers-prev-unread ()
-	     "Mu4e developers are retarded, this fixes that"
-	     (mu4e-headers-next-unread t)))
+  (defun mu4e-headers-prev-unread ()
+    "Mu4e developers are retarded, this fixes that"
+    (mu4e-headers-next-unread t)))
 ;;; mu4e-fixes.el ends here

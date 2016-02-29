@@ -3,75 +3,57 @@
 ;;; Standard library that can always be assumed to be loaded when writing
 ;;; config files.
 ;;; Code:
-(require 'cl-lib)
+(require 'cl-lib 'package)
 
 ;; Turn on lexical binding by default.
 (setq lexical-binding t)
 
 (defun clear-directory (path)
-  "Clears the contents of the given directory."
+  "Clear the contents of PATH."
   (delete-directory path t)
   (make-directory path))
 
 (defun move-key (keymap-from keymap-to key)
-  "Moves key binding from one keymap to another, deleting from the old location. "
+  "Move binding from KEYMAP-FROM to KEYMAP-TO, deleting KEY from the old location."
   (define-key keymap-to key (lookup-key keymap-from key))
   (define-key keymap-from key nil))
 
 (defmacro requires (&rest libs)
-  "Lets you require multiple things without quoting them."
+  "Let you require multiple LIBS without quoting them."
   `(mapc (symbol-function 'require)
 	 (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
 
 (defmacro provides (&rest libs)
-  "Lets you provide multiple things without quoting them."
+  "Let you provide multiple LIBS without quoting them."
   `(mapc (symbol-function 'provide)
 	 (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
 
 (defun mklist (thing)
-  "Ensures something is a list."
+  "Ensure THING is a list."
   (if (listp thing)
       thing
     (list thing)))
 
-(defmacro requiring (libs &rest body)
-  "Lets you require multiple things without quoting them."
-  `(when (and
-	  ,@(mapcar
-	     (lambda (lib)
-	       `(if (require ',lib nil 'noerror)
-		    t
-		  (progn
-		    (message ,(concat "Failed to load library: " (symbol-name lib)))
-		    nil)))
-	     libs))
-     ,@body))
-
-(defmacro defeat (feature-name deps &rest body)
-  `(requiring ,deps
-	      ,@body
-	      (provides ,feature-name)))
-
 (defun compiled-file-path (path)
-  "Returns the compiled file path for file."
+  "Return the compiled file path for PATH."
   (format "%sc" path))
 
 (cl-defmacro save-buffer-info (&rest body)
   "Saves information about the current buffer, runs body, and restores info."
   `(save-excursion
-	 (save-restriction
-	   ,@body)))
+     (save-restriction
+       ,@body)))
 
 (defun buffer-starts-with (regex)
-  "Returns whether the current buffer starts with a regex."
+  "Return whether the current buffer start with REGEX."
   (save-buffer-info
-	(widen)
-	(goto-char (point-min))
-	(save-match-data
-	  (looking-at regex))))
+   (widen)
+   (goto-char (point-min))
+   (save-match-data
+     (looking-at regex))))
 
 (defun buffer-is-script ()
-  "Returns whether the current buffer is a script."
+  "Return whether the current buffer is a script."
   (buffer-starts-with "^#!"))
 
 (cl-defmacro let1 (var value &rest body)
@@ -94,7 +76,7 @@
   (mappend #'to-list tree))
 
 (defun flatten (tree)
-  "Fully flattens a list."
+  "Fully flatten TREE."
   (mappend
    (lambda (thing)
      (if (listp thing)
@@ -250,19 +232,17 @@
 (defun extract-line-number (line-str)
   "Return line number represented by LINE-STR."
   (-> line-str
-	  (cl-subseq 5)
-	  string-to-number))
+      (cl-subseq 5)
+      string-to-number))
 
 (defun current-line-number ()
   "Return the current line number."
   (-> (what-line)
-	  extract-line-number))
+      extract-line-number))
 
 (defun lines-in-buffer ()
   "Return the number of lines in the current buffer."
-  (save-buffer-info
-   (end-of-buffer)
-   (current-line-number)))
+  (count-lines (point-min) (point-max)))
 
 (defmacro defwrap (name args-list &rest body)
   "Define a wrapper function for function NAME, taking arguments ARGS-LIST, with code body of BODY.  The original function is implicitly bound to the name NAME in the code body."
@@ -315,7 +295,7 @@
 	  (progn ,fn
 		 (setq no-error t)))
 	 (when (not no-error)
-	     ,@body)))
+	   ,@body)))
 
 (defmacro with-finally-returned (fn &rest body)
   "Ignore errors in the wrapped FN, executing and returning BODY as finally."
@@ -326,12 +306,94 @@
   "Plays a youtube video URL."
   (start-process url url "mpv" url))
 
+(defun autostart-programs ()
+  "Starts all autostart programs."
+  (start-process "autostart" "autostart" "/home/miningmarsh/.autostarts"))
+
 (defun remove-from-list (list element &optional compare-fn)
   "Remove from LIST ELEMENT, using COMPARE-FN."
   (set list (cl-delete-if
 	     (lambda (e)
 	       (funcall (if compare-fn compare-fn #'equal) element e))
 	     (eval list))))
+
+(defmacro create-global-modes (&rest minor-modes)
+  "Create global modes for given MINOR-MODES."
+  `(progn
+     ,@(mapcar
+	(lambda (mode)
+	  `(define-globalized-minor-mode
+	     ,(->> mode
+		   symbol-name
+		   (format "global-%s")
+		   intern)
+	     ,mode
+	     (lambda () (,mode 1))))
+	minor-modes)))
+
+(defmacro bind-global (&rest bindings)
+  "Create global keybinds BINDINGS."
+  `(progn
+     ,@(mapcar
+	(lambda (binding)
+	  (bind-head-tail (key func) binding
+			  `(global-set-key
+			    ,key
+			    (lambda ()
+			      (interactive)
+			      ,(car func)))))
+	(partition 2 bindings))))
+
+(defun trim-string (string)
+  "Remove white spaces in beginning and ending of STRING.
+White space here is any of: space, tab, emacs newline (line feed, ASCII 10).
+Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
+  (->> string
+       (replace-regexp-in-string "[ \t\n]*\\'" "")
+       (replace-regexp-in-string "\\`[ \t\n]*" "")))
+
+(defun date ()
+  "Print the current date/time as a message."
+  (interactive)
+  (message (current-time-string)))
+
+(defmacro unless-setq (&rest sets)
+  `(progn
+     ,@(mapcar
+	(lambda (entry)
+	  `(unless ,(car entry) (setq ,(car entry) ,(cadr entry))))
+	(partition 2 sets))))
+
+(defun ! (command)
+  "Run shell COMMAND, producing a message with leading and trailing whitespace stripped."
+  (let ((result (-> command shell-command-to-string trim-string)))
+    (when (and result (> (length result) 0))
+	  (message "%s" result))))
+
+(lexical-let ((last-gcs-done 0)
+	      (last-gc-elapsed 0)
+	      (last-gc-average 0.0))
+  (defun running-gc-time (&optional print-message)
+    (interactive "p")
+    "Return the current average time needed to perform a garbage collect."
+    (when (< last-gcs-done gcs-done)
+      (setq last-gc-average
+	    (/ (- (float gc-elapsed) (float last-gc-elapsed))
+	       (- (float gcs-done) (float last-gcs-done))))
+      (setq last-gcs-done gcs-done
+	    last-gc-elapsed gc-elapsed))
+    (when print-message
+      (message "%s" last-gc-average))
+    last-gc-average))
+
+(cl-defmacro defer-after-init (&body body)
+  "Run BODY after init has finished."
+  `(add-hooks (after-init-hook)
+	     ,@body))
+
+(defun launch-program (program-name)
+  "Launch PROGRAM-NAME in a new buffer."
+  (start-process-shell-command program-name nil program-name))
 
 ;; Signal that RC has been loaded.
 (provide 'rc)

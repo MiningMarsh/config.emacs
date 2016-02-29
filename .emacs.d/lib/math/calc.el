@@ -52,8 +52,8 @@
   (defun scale-down-vector (scale-factor vector)
     (cl-mapcar (lambda (val)
 		 (/ val scale-factor))
-	       vector))
+	       vector)))
 
-  (defun unit-vector-of (vector)
-    (scale-down-vector (vector-length vector) vector)))
+(defun unit-vector-of (vector)
+  (scale-down-vector (vector-length vector) vector))
 ;;; calc.el ends here

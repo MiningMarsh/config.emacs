@@ -100,8 +100,7 @@
 	       (when (elisp-filep path)
 		 (with-ignored-errors (compile-file path))))
 	     (format "~/.emacs.d/%s/" path)))
-	  '("lib"
-	    "theme"))
+	  '("lib" "theme"))
 
     ;; Load files.
     (map-dir

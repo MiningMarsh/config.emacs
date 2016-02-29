@@ -22,46 +22,48 @@
   (defwrap erc-send-input (message)
     (if (not erc-input-hooks-active)
 	(erc-send-input message)
-      (let1 taken nil
-	    (dolist (input-hook-pair erc-input-hooks-alist)
-	      (bind-head-tail (test result) input-hook-pair
+      (progn
+	;; Ensure messages is a list.
+	(setq message (mklist message))
 
-			      ;; Special case: strings == regex.
-			      (lexical-let ((original-test test)
-					    (original-result result))
-				(when (stringp test)
-				  (when (and result (stringp result))
-				    (setq result
-					  (lambda (string)
-					    (replace-regexp-in-string
-					     original-test original-result string))))
-				  (setq test
-					(lambda (string)
-					  (string-match
-					   original-test
-					   string)))))
+	(dolist (input-hook-pair erc-input-hooks-alist)
+	  (bind-head-tail
+	   (test result)
+	   input-hook-pair
 
-			      ;; Special case: if result is not a function, make
-			      ;; it a function that returns said value.
-			      (when (not (functionp result))
-				(lexical-let ((original-result result))
-				  (setq result (lambda (test) original-result))))
+	   ;; Special case: strings == regex.
+	   (lexical-let ((original-test test)
+			 (original-result result))
+	     (when (and test (stringp test))
+	       (when (and result (stringp result))
+		 (setq result
+		       (lambda (string)
+			 (replace-regexp-in-string
+			  original-test
+			  original-result
+			  string))))
+	       (setq test
+		     (lambda (string)
+		       (string-match
+			original-test
+			string)))))
 
-			      ;; Actually apply test and filter.
-			      (when (funcall test message)
-				(if (not taken)
-				    (setq message
-					  (mklist (funcall result message)))
-				  (let1 new-message nil
-					(dolist (part message)
-					  (setq new-message
-						(append new-message
-						       (mklist
-							(funcall result part)))))))
-				(setq message (funcall result message))
-				(setq taken t))))
-	    (if taken
-		(dolist (input (mklist message))
-		  (erc-send-input input))
-	      (erc-send-input message))))))
+	   ;; Special case: if result is not a function, make
+	   ;; it a function that returns said value.
+	   (when (not (functionp result))
+	     (lexical-let ((original-result result))
+	       (setq result (lambda (test) original-result))))
+
+	   ;; Actually apply test and filter.
+	   (let1 new-message nil
+		 (dolist (part message)
+		   (when (funcall test part)
+		     (setq new-message
+			   (append new-message
+				   (mklist
+				    (funcall result part))))))
+		 (when new-message
+		   (setq message new-message)))))
+	(dolist (part message)
+	  (erc-send-input part))))))
 ;;; erc-input-hooks.el ends here
