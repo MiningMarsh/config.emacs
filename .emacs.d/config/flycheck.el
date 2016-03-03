@@ -11,5 +11,6 @@
 		       lisp-mode-hook
 		       lisp-interactive-mode-hook
 		       scheme-mode-hook)
-		      flycheck-mode))
+		      (unless (string= (buffer-name) "*scratch*")
+			(flycheck-mode 1))))
 ;;; flycheck.el ends here

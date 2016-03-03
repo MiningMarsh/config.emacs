@@ -27,25 +27,38 @@
 		       "Compiles and loads a file."
 		       (if (needs-recompile path compiled)
 			   (progn
-				(let ((local (concat path "c")))
-				  (when (file-exists-p local)
-					(delete-file local))
-				 (byte-compile-file path load)
-					(when (not (string= compiled local))
-					  (when (file-exists-p compiled)
-						(delete-file compiled))
-					  (rename-file local compiled))))
+			     (let ((local (concat path "c")))
+			       (when (file-exists-p local)
+				 (delete-file local))
+			       (byte-compile-file path load)
+			       (when (not (string= compiled local))
+				 (when (file-exists-p compiled)
+				   (delete-file compiled))
+				 (rename-file local compiled))))
 			 (when load (load-file compiled))))
 
      (elisp-filep (path)
-		    "Returns whether the path is elisp."
-		    (and path
-			 (not (file-directory-p path))
-			 (string-match ".*el$" path)))
+		  "Returns whether the path is elisp."
+		  (and path
+		       (not (file-directory-p path))
+		       (string-match ".*el$" path)))
 
      (compile-file (path &optional load)
 		   "Recompiles a file if needed."
 		   (compile-and-load path (concat path "c") load))
+
+     (create-message (&rest strs)
+		     (concat
+		      (cl-reduce
+		       (lambda (l r)
+			 (concat l "\n" r))
+		       strs)
+			  "\n"))
+
+     (float-current-time ()
+			 "Return float time, ignores upper bits."
+			 (let ((current (current-time)))
+			   (+ (second current) (/ (third current) 10000000.0))))
 
      (compile-file-cached (path &optional load)
 			  "Compiles a file and puts it in the storage cache."
@@ -58,60 +71,123 @@
 			   load)))
 
   (cl-macrolet ((with-ignored-errors (&rest body)
-		  "Ignore errors in the wrapped BODY."
-		  `(unwind-protect
-		       (let (retval)
-			 (condition-case ex
-			     (setq retval (progn ,@body))
-			   ('error
-			    (message "Failed to load file.")
-			    (setq retval nil)))
-			 retval))))
+				     "Ignore errors in the wrapped BODY."
+				     `(unwind-protect
+					  (let (retval)
+					    (condition-case ex
+						(setq retval (progn ,@body))
+					      ('error
+					       (message "Failed to load file.")
+					       (setq retval nil)))
+					    retval)))
+		(elapsed-time (&rest body)
+			      "Execute body, returning time elapsed."
+			      (let ((start-time (cl-gensym)))
+				`(let ((,start-time (float-current-time)))
+				   ,@body
+				   (- (float-current-time) ,start-time)))))
 
 
-    ;; Only recompile the init file if needed.
-    (compile-file "~/.emacs.d/init.el")
+    (let ((load-time 0)
+	  (walk-time 0)
+	  (lib-time 0)
+	  (config-time 0)
+	  (package-time 0)
+	  (userp 0)
+	  (systemp 0)
+	  (combinedp 0))
+      (setq load-time
+	    (elapsed-time
+	     ;; Only recompile the init file if needed.
+	     (compile-file "~/.emacs.d/init.el")
 
-    ;; Make the compiled cached directory if needed.
-    (when (not (file-directory-p "~/.emacs.d/compiled"))
-      (make-directory "~/.emacs.d/compiled"))
+	     ;; Make the compiled cached directory if needed.
+	     (when (not (file-directory-p "~/.emacs.d/compiled"))
+	       (make-directory "~/.emacs.d/compiled"))
 
-    ;; Distro specific emacs library code.
-    (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
+	     ;; Distro specific emacs library code.
+	     (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
-    ;; Setup the library path.
-    (map-dir
-     (lambda (path)
-       (when (file-directory-p path)
-	 (add-to-list 'load-path path)))
-     "~/.emacs.d/lib/")
+	     (setq
+	      walk-time
+	      (elapsed-time
+	       ;; Setup the library path.
+	       (map-dir
+		(lambda (path)
+		  (when (file-directory-p path)
+		    (add-to-list 'load-path path)))
+		"~/.emacs.d/lib/")
 
-    ;; Setup the themepath.
-    (map-dir
-     (lambda (path)
-       (when (file-directory-p path)
-	 (add-to-list 'custom-theme-load-path path)))
-     "~/.emacs.d/theme/")
+	       ;; Setup the themepath.
+	       (map-dir
+		(lambda (path)
+		  (when (file-directory-p path)
+		    (add-to-list 'custom-theme-load-path path)))
+		"~/.emacs.d/theme/")))
 
-    ;; Byte compile everything.
-    (mapc (lambda (path)
-	    (map-dir
-	     (lambda (path)
-	       (when (elisp-filep path)
-		 (with-ignored-errors (compile-file path))))
-	     (format "~/.emacs.d/%s/" path)))
-	  '("lib" "theme"))
+	     (setq
+	      lib-time
+	      (elapsed-time
+	       ;; Byte compile everything.
+	       (mapc (lambda (path)
+		       (map-dir
+			(lambda (path)
+			  (when (elisp-filep path)
+			    (with-ignored-errors (compile-file path))))
+			(format "~/.emacs.d/%s/" path)))
+		     '("lib" "theme"))))
 
-    ;; Load files.
-    (map-dir
-     (lambda (path)
-       (when (elisp-filep path)
-	 (with-ignored-errors (compile-file-cached path t))))
-     "~/.emacs.d/config/")
+	     (setq
+	      config-time
+	      (elapsed-time
+	       ;; Load files.
+	       (map-dir
+		(lambda (path)
+		  (when (elisp-filep path)
+		    (with-ignored-errors (compile-file-cached path t))))
+		"~/.emacs.d/config/")))
+	     (setq
+	      package-time
+	      (elapsed-time
+	       (setq userp (length package-alist)
+		     systemp (length package--builtins)
+		     combinedp (length
+				(remove-duplicates
+				 (mapcar 'car
+					 (append package-alist
+						 package--builtins)))))))))
 
-    ;; Clear the message buffer.
-    (message "")
+      ;; Clear the message buffer.
+      (message "")
 
-    ;; Signal that init has finished.
-    (provide 'init)))
+      ;; Make sure we only have one window.
+      (delete-other-windows)
+
+      ;; Switch to scratch buffer.
+      (switch-to-buffer "*scratch*")
+
+      ;; Print stats to user
+      (setq initial-scratch-message
+	    (format (create-message ";;; This buffer is for quick Emacs Lisp code."
+				    ";;;"
+				    ";;; Startup took %f seconds."
+				    ";;; ➡ Directory walking took %f seconds."
+				    ";;; ➡ Library compilation took %f seconds."
+				    ";;; ➡ Configuration compilation and loading took %f seconds."
+				    ";;; ➡ Package query logic took %f seconds."
+				    ";;;"
+				    ";;; There are %d packages installed."
+				    ";;; ➡ There are %d builtin packages installed."
+				    ";;; ➡ There are %d user-requested packages installed.")
+		    load-time
+		    walk-time
+		    lib-time
+		    config-time
+		    package-time
+		    combinedp
+		    systemp
+		    userp))
+
+      ;; Signal that init has finished.
+      (provide 'init))))
 ;;; init.el ends here

@@ -368,7 +368,7 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
   "Run shell COMMAND, producing a message with leading and trailing whitespace stripped."
   (let ((result (-> command shell-command-to-string trim-string)))
     (when (and result (> (length result) 0))
-	  (message "%s" result))))
+      (message "%s" result))))
 
 (lexical-let ((last-gcs-done 0)
 	      (last-gc-elapsed 0)
@@ -389,11 +389,129 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
 (cl-defmacro defer-after-init (&body body)
   "Run BODY after init has finished."
   `(add-hooks (after-init-hook)
-	     ,@body))
+	      ,@body))
 
 (defun launch-program (program-name)
   "Launch PROGRAM-NAME in a new buffer."
   (start-process-shell-command program-name nil program-name))
+
+(defun remove-if-nil (list)
+  "Remove every nil element from LIST."
+  (cl-remove-if-not 'identity list))
+
+(defun frame-window-list ()
+  "Return list of windows in current frame."
+  (->> (selected-frame)
+       buffer-list
+       (mapcar 'get-buffer-window)
+       remove-if-nil))
+
+(defun zip (&rest lists)
+  "Zip LISTS together."
+  (apply #'cl-mapcar #'list lists))
+
+(defun swap-buffers (first second)
+  "Swap the buffers contained by window FIRST and window SECOND."
+  (let1 temp-buffer (window-buffer first)
+	(set-window-buffer first (window-buffer second))
+	(set-window-buffer second temp-buffer)))
+
+(defun global-symbols ()
+  "Return list of bound non-lexical global symbols."
+  (loop
+   for symbol being the symbols
+   if (boundp symbol)
+   collect symbol))
+
+(defun bind-symbol (symbol value)
+  "Set SYMBOL to VALUE."
+  (interactive
+   (list (intern (completing-read "Bind symbol: "
+				  (global-symbols)
+				  #'identity 'confirm))
+	 (call-interactively 'eval-expression)))
+  (set symbol value))
+
+(defun retrieve-symbol (symbol)
+  "Print value of SYMBOL."
+  (interactive
+   (list (intern (completing-read "Retrieve symbol: "
+				  (global-symbols)
+				  #'identity 'confirm))))
+  (message "%s" (symbol-value symbol)))
+
+(cl-defmacro when-let (symbol value &rest body)
+  "Bind symbol and only execute body if symbol is true."
+  `(let1 ,symbol ,value
+	 (when ,symbol
+	   ,@body)))
+
+(cl-defmacro if-let (symbol value true false)
+  "Bind SYMBOL to VALUE and execute TRUE if non-nil, FALSE otherwise."
+  `(let1 ,symbol ,value
+	 (if ,symbol
+	     ,true
+	   ,false)))
+
+(cl-defmacro to-file (filename &rest body)
+  "Write the value to FILENAME returned by BODY, then forward return value."
+  (with-gensym result
+	       `(let1 ,result (progn ,@body)
+		      (with-temp-file ,filename
+			(insert
+			 (message "%s" ,result)))
+		      ,result)))
+
+(defun eval-file (file)
+  "Execute FILE and return the result of the last expression."
+  (eval
+   (cdar
+    (ignore-errors
+      (read-from-string
+       (format "(progn %s)"
+	       (with-temp-buffer
+		 (insert-file-contents file)
+		 (buffer-string))))))))
+
+(defun read-file (file)
+  "Read FILE and return the list of expressions in the file."
+  (cdar
+   (ignore-errors
+     (read-from-string
+      (format "(list %s)"
+	      (with-temp-buffer
+		(insert-file-contents file)
+		(buffer-string)))))))
+
+(defun read-file-last (file)
+  "Read FILE and return the last expression in the file."
+  (-> file
+      read-file
+      last
+      car))
+
+(defun read-file-first (file)
+  "Read FILE and return the first expression in the file."
+  (-> file
+      read-file
+      car))
+
+(defun config-file (filename)
+  "Return the cconfig filename for FILENAME."
+  (format "%s/.emacs.d/%s"
+	  (getenv "HOME")
+	  filename))
+
+(defun start-music ()
+  (interactive)
+  (start-process-shell-command
+   "music"
+   "music"
+   "mplayer /home/miningmarsh/.emacs.d/stallman.mp3 -loop 0"))
+
+(defun stop-music ()
+  (interactive)
+  (kill-process "music"))
 
 ;; Signal that RC has been loaded.
 (provide 'rc)
