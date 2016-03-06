@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (exwm window-number nyan-mode)
+(requiring (exwm window-number)
 
 	   (exwm-input-set-key
 	    (kbd "<XF86AudioRaiseVolume>")
@@ -78,6 +78,13 @@
 	      (interactive)
 	      (ansi-term (getenv "SHELL"))))
 
+	   (exwm-input-set-key
+	    (kbd "s-|")
+	    'split-window-right)
+	   (exwm-input-set-key
+	    (kbd "s-_")
+	    'split-window-below)
+
 	   (lexical-let ((playing nil)
 			 (last-fired (second (current-time))))
 	     (exwm-input-set-key
@@ -151,25 +158,18 @@
 
 			  ;; If needed, restore focus to the original window.
 			  (when (not the-same)
-			    (select-window selected)))))
+			    (select-window selected))))))))
+	   ;; Keys that could not be programmtically binded above.
+	   (exwm-input-set-key
+	    (kbd "C-s-\\")
+	    'delete-window)
+	   (exwm-input-set-key
+	    (kbd "C-s-<backspace>")
+	    'delete-other-windows)
 
-		     ;; Move windows.
-		     )))
-
-	   ;; Set prefix key for launching programs.
-	   (add-to-list 'exwm-input-prefix-keys ?\s-z)
-
-	   ;; Bind keys to launch programs.
-	   (mapc (lambda (atom)
-		   (lexical-let ((atom atom))
-		     (exwm-input-set-key
-		      (kbd (format "s-z %s" (car atom)))
-		      (lambda ()
-			(interactive)
-			(launch-program (cdr atom))))))
-		 (assoc-map "f" "firefox"
-			    "l" "libreoffice"
-			    "u" "urxvtc"))
+	   ;; Ket for global vim binds.
+	   ;; 838860 is (kbd "s-<SPC">)
+	   (add-to-list 'exwm-input-prefix-keys 8388640)
 
 	   (requiring (buffer-move)
 		      (mapc (lambda (atom)

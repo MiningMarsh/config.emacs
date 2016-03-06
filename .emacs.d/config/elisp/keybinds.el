@@ -4,26 +4,41 @@
 (require 'rc)
 
 (requiring (evil evil-leader paredit)
-	   (evil-leader/set-key-for-mode 'emacs-lisp-mode
-	     "(" 'paredit-open-round
-	     ")" 'paredit-close-round
-	     "B" 'paredit-backward-barf-sexp
-	     "D" 'paredit-backward-delete
-	     "H" 'paredit-join-sexp
-	     "R" 'paredit-kill
-	     "S" 'paredit-backward-slurp-sex
-	     "X" 'paredit-backward-kill-word
-	     "b" 'paredit-forward-barf-sexp
-	     "d" 'paredit-forward-delete
-	     "e" (lambda (&rest args)
-			   (interactive)
-			   (with-temp-message "Buffer evaluating..."
-				 (eval-buffer))
-			   (message "Buffer evaluated."))
-	     "h" 'paredit-split-sexp
-	     "j" 'paredit-forward
-	     "k" 'paredit-backward
-	     "r" 'paredit-raise-sexp
-	     "s" 'paredit-forward-slurp-sexp
-	     "x" 'paredit-forward-kill-word))
+	   (evil-leader/set-key-tree-for-mode
+	    emacs-lisp-mode
+	    "l" ("Lisp Editing"
+		 "(" "Open Clause" 'paredit-open-round
+		 ")" "Close Clause" 'paredit-close-round
+
+		 "b" ("Barf"
+		      "f" "Barf Forward" 'paredit-forward-barf-sexp
+		      "b" "Barf Backward" 'paredit-backward-barf-sexp)
+
+		 "d" ("Delete"
+		      "f" "Delete Forward" 'paredit-forward-delete
+		      "b" "Delete Backward" 'paredit-backward-delete)
+
+		 "j" "Move Forward" 'paredit-forward
+		 "k" "Move Backward" 'paredit-backward
+		 "J" "Join Expression" 'paredit-join-sexp
+
+		 "s" ("Slurp"
+		      "b" "Slurp Backward" 'paredit-backward-slurp-sexp
+		      "f" "Slurp Forward" 'paredit-forward-slurp-sexp)
+
+		 "K" ("Kill"
+		      "k" "Kill Expression" 'paredit-kill
+
+		      "w" ("Kill Word"
+			   "f" "Kill Word Forward" 'paredit-forward-kill-word
+			   "b" "Kill Word Backward" 'paredit-backward-kill-word))
+
+		 "S" "Split Expression" 'paredit-split-sexp
+		 "r" "Raise Expression" 'paredit-raise-sexp)
+
+	    "b" ("Buffer"
+		 "e" "Evaluate Buffer" (interactively
+					(with-temp-message "Buffer evaluating..."
+					  (eval-buffer))
+					(message "Buffer evaluated.")))))
 ;;; keybinds.el ends here

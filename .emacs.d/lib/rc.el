@@ -521,6 +521,140 @@ using COMPARE-FN."
   (message "Trace: %s" value)
   value)
 
+(cl-defmacro interactively (&rest body)
+  "Create an interactive lambda on the BODY."
+  `(lambda (&rest args)
+     (interactive)
+     ,@body))
+
+(cl-defmacro evil-leader/set-key-tree (&rest key-tree)
+  "Set the KEY-TREE."
+
+  (let1 result `(progn)
+	(cl-labels
+
+	    ;; Set a key-tree recursively
+	    ((set-key-tree
+	      (prefix description tree)
+
+	      ;; Add the key-description for the current subtree.
+	      (setq result
+		    (nconc result
+			   (list
+			    `(which-key-add-key-based-replacements
+			       ,(concat "<SPC> " prefix)
+			       ,description)
+			    `(which-key-add-key-based-replacements
+			       ,(concat "s-<SPC> " prefix)
+			       ,description))))
+
+	      ;; While there are still keys to parse in the tree.
+	      (while tree
+
+		;; Pop the next key, and the next description/subtree.
+		(let* ((key (pop tree))
+		       (value (pop tree)))
+
+		  ;; If we are dealing with a subtree, recurse.
+		  (if (and (not (stringp value))
+			   (listp value))
+
+		      ;; Grab the description of the next key.
+		      (let1 description (pop value)
+
+			    ;; Recurse
+			    (set-key-tree
+			     ;; Append the next key to the prefix for the
+			     ;; new tree.
+			     (concat prefix " " key)
+			     description
+			     value))
+
+		    ;; Otherwise, pop the command from the tree.
+		    (let1 command (pop tree)
+			  ;; Add the key description.
+			  (setq result
+				(nconc result
+				       (list
+					`(which-key-add-key-based-replacements
+					   ,(concat "<SPC> " prefix " " key)
+					   ,value)
+					`(which-key-add-key-based-replacements
+					   ,(concat "s-<SPC> " prefix " " key)
+					   ,value)
+					;; Add the key binding.
+					`(evil-leader/set-key
+					   ,(concat prefix " " key)
+					   ,command)
+					`(exwm-input-set-key
+					  ,(kbd (concat "s-<SPC> " prefix " " key))
+					  ,command))))))))))
+
+	  ;; Recurse on the tree.
+	  (set-key-tree "" "All" key-tree))
+	result))
+
+(cl-defmacro evil-leader/set-key-tree-for-mode (mode &rest key-tree)
+  "Set the MODE specific KEY-TREE."
+
+  (let1 result `(progn)
+	(cl-labels
+
+	    ;; Set a key-tree recursively
+	    ((set-key-tree
+	      (prefix description tree)
+
+	      ;; Add the key-description for the current subtree.
+	      (setq result
+		    (nconc result
+			   (list
+			    `(which-key-add-major-mode-key-based-replacements
+			       (quote ,mode)
+			       ,(concat "<SPC> " prefix)
+			       ,description))))
+
+	      ;; While there are still keys to parse in the tree.
+	      (while tree
+
+		;; Pop the next key, and the next description/subtree.
+		(let* ((key (pop tree))
+		       (value (pop tree)))
+
+		  ;; If we are dealing with a subtree, recurse.
+		  (if (and (not (stringp value))
+			   (listp value))
+
+		      ;; Grab the description of the next key.
+		      (let1 description (pop value)
+
+			    ;; Recurse
+			    (set-key-tree
+			     ;; Append the next key to the prefix for the
+			     ;; new tree.
+			     (concat prefix " " key)
+			     description
+			     value))
+
+		    ;; Otherwise, pop the command from the tree.
+		    (let1 command (pop tree)
+			  ;; Add the key description.
+			  (setq result
+				(nconc result
+				       (list
+					`(which-key-add-major-mode-key-based-replacements
+					   (quote ,mode)
+					   ,(concat "<SPC> " prefix " " key)
+					   ,value)
+					;; Add the key binding.
+					`(evil-leader/set-key-for-mode
+					   (quote ,mode)
+					   ,(concat prefix " " key)
+					   ,command))))))))))
+
+	  ;; Recurse on the tree.
+	  (set-key-tree "" "All" key-tree))
+	result))
+
 (defun start-music ()
   (interactive)
   (start-process-shell-command
