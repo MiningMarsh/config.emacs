@@ -76,7 +76,7 @@
 	    (kbd "s-<return>")
 	    (lambda ()
 	      (interactive)
-	      (launch-program "urxvtc")))
+	      (ansi-term (getenv "SHELL"))))
 
 	   (lexical-let ((playing nil)
 			 (last-fired (second (current-time))))

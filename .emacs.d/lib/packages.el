@@ -15,15 +15,48 @@
 ;; Init package subsystem.
 (package-initialize)
 
+(defvar package-startup-finished nil
+  "Whether package-finish has yet been called.")
+
+(defvar package-installed-on-startup 0
+  "The number of packages installed on startup.")
+
+(defvar package-removed-on-startup 0
+  "The number of packages that were removed on startup.")
+
 ;; Make package-refresh-contents update the last updated cache that
 ;; package-refresh-contents-if-needed uses.
+;; Refreshes package contents if not already refreshed.
+(lexical-let (already nil)
+  (defun package-refresh-contents-if-not-already ()
+    "Refresh package database if not already refreshed."
+    (unless already
+      (package-refresh-contents)
+      (setq already t)))
 (advice-add 'package-refresh-contents
 	    :after
 	    (lambda (&rest args)
 
+		  (setq already t)
+
 	      ;; Print a timestamp to the cache file.
 	      (to-file (config-file "last-updated")
-		       (decode-time))))
+		       (decode-time)))))
+
+(advice-add 'package-install
+	    :after
+	    (lambda (&rest args)
+	      (unless package-startup-finished
+		(setq package-installed-on-startup
+		      (1+ package-installed-on-startup)))))
+
+(advice-add 'package-delete
+	    :after
+	    (lambda (&rest args)
+	      (unless package-startup-finished
+		(setq package-removed-on-startup
+		      (1+ package-removed-on-startup)))))
+
 
 (defun package-refresh-contents-if-needed (&optional interactive)
   "Refresh package contents if not already refreshed.  Print output if INTERACTIVE is non-nil."
@@ -55,9 +88,57 @@
       symbol-name
       locate-library))
 
+(cl-defun package-deps (orig-package &optional list-package list-builtins)
+  "Returns a list of packages that PACKAGE depends on, including their dependencies.
+If LIST-PACKAGE is non-nil, include the package in the results.
+If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
+  (lexical-let ((orig-package orig-package))
+    (wall (list orig-package)
+	  (lambda (packages)
+	    (cl-remove-duplicates
+	     (cl-remove-if
+	      (lambda (p)
+		(or
+		 (unless list-package
+		   (equal p orig-package))
+		 (unless list-builtins
+		   (assq p package--builtins))))
+
+	      (append packages
+		      (mappend
+		       (lambda (package)
+			 (when-let
+			  package-desc (package-description package)
+			  (when (package-desc-p package-desc)
+			    (mapcar 'car (package-desc-reqs package-desc)))))
+		       packages))))))))
+
+(defvar package-marked-list nil
+  "List of packages the user has marked.")
+
+(defun package-mark (package)
+  "Mark PACKAGE as being requested to be installed by the user."
+  (setq package-marked-list
+	(cl-remove-duplicates
+	 (append
+	  package-marked-list
+	  (package-deps package t)))))
+
+(defun package-finish ()
+  "Uninstall all unneeded packages."
+  (unless package-startup-finished
+    (mapc (lambda (p)
+	    (package-uninstall p))
+	  (cl-remove-if
+	   (lambda (p) (member p package-marked-list))
+	   (mapcar 'car package-alist)))
+    (setq package-startup-finished t)))
+
+(add-hook 'after-config-hook
+	  'package-finish)
+
 (defun package-description-remote (package)
   "Return the description of PACKAGE if it is available remotely, nil otherwise."
-  (package-refresh-contents-if-needed)
   (-> package
       (assq package-archive-contents)
       cadr))
@@ -213,6 +294,9 @@
        ;; Uninstall outdated package.
        (package-uninstall-outdated package)
 
+       ;; Upgrade any dependencies needed.
+       (mapc 'package-install-or-upgrade-if-needed (package-deps package))
+
        (when interactive
 	 (message "Upgraded '%s'." package))
 
@@ -260,13 +344,19 @@ Only run BODY if they could be loaded."
 
 		  ;; If the package is not available remotely or locally, spit
 		  ;; an error message.
-		  (if (not (feature-exists (quote ,lib)))
+		  (if (not (or (feature-exists (quote ,lib))
+					   (package-refresh-contents-if-not-already)
+		  (feature-exists (quote ,lib))))
 		      (progn
 			(message "Could not install package/load feature '%s'" (quote ,lib))
 			nil)
 		    (progn
+		      (package-refresh-contents-if-needed)
 		      (package-install-or-upgrade-if-needed (quote ,lib))
-		      (require (quote ,lib) nil 'noerror)))))
+		      (package-mark (quote ,lib))
+		      (if ,(string-match ".*-theme" (symbol-name lib))
+			  t
+			(require (quote ,lib) nil 'noerror))))))
 	     libs))
      ,@body))
 

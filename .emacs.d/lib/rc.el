@@ -502,6 +502,25 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
 	  (getenv "HOME")
 	  filename))
 
+(cl-defun wall (arg fn &optional (compare-fn 'equal))
+  "Repeatably pass ARG to FN.  Set ARG to the result of the next FN call.
+Return ARG once the value from FN stops changing.  Results are compared
+using COMPARE-FN."
+  (let ((current arg)
+	(run nil)
+	(last nil))
+    (while (or (not run)
+	       (not (funcall compare-fn current last)))
+      (setq run t)
+      (setq last current)
+      (setq current (funcall fn current)))
+    current))
+
+(defun trace (value)
+  "Print VALUE to messages buffer, then return VALUE."
+  (message "Trace: %s" value)
+  value)
+
 (defun start-music ()
   (interactive)
   (start-process-shell-command

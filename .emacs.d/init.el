@@ -6,6 +6,10 @@
 ;;; Code:
 (require 'cl-lib)
 
+;; init.el hook
+(defvar after-config-hook nil
+  "List of hooks to run after config has been read.")
+
 ;; Wrap everything in labels so that this file does not pollute the global
 ;; namespace at all.
 (cl-labels
@@ -53,7 +57,7 @@
 		       (lambda (l r)
 			 (concat l "\n" r))
 		       strs)
-			  "\n"))
+		      "\n"))
 
      (float-current-time ()
 			 "Return float time, ignores upper bits."
@@ -146,6 +150,12 @@
 		  (when (elisp-filep path)
 		    (with-ignored-errors (compile-file-cached path t))))
 		"~/.emacs.d/config/")))
+
+	     ;; Run post config hooks.
+	     (dolist (hook after-config-hook)
+	       (funcall hook))
+
+	     ;; Package query logic.
 	     (setq
 	      package-time
 	      (elapsed-time
@@ -178,7 +188,10 @@
 				    ";;;"
 				    ";;; There are %d packages installed."
 				    ";;; ➡ There are %d builtin packages installed."
-				    ";;; ➡ There are %d user-requested packages installed.")
+				    ";;; ➡ There are %d user-requested packages installed."
+				    ";;; ➡ %d packages were installed on startup."
+				    ";;; ➡ %d packages were removed on startup."
+				    )
 		    load-time
 		    walk-time
 		    lib-time
@@ -186,7 +199,9 @@
 		    package-time
 		    combinedp
 		    systemp
-		    userp))
+		    userp
+		    package-installed-on-startup
+		    package-removed-on-startup))
 
       ;; Signal that init has finished.
       (provide 'init))))
