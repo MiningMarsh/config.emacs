@@ -141,6 +141,9 @@
 			(format "~/.emacs.d/%s/" path)))
 		     '("lib" "theme"))))
 
+	     ;; Cause some bootstrapping by making sure the rc library is loaded.
+	     (require 'rc)
+
 	     (setq
 	      config-time
 	      (elapsed-time

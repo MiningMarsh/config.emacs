@@ -7,5 +7,6 @@
  'ansi-term
  :after
  (lambda (&rest args)
-   (line-number-mode -1)))
+   (line-number-mode -1)
+   (linum-mode -1)))
 ;;; no-line-numbers.el ends here

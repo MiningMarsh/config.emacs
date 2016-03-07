@@ -2,12 +2,10 @@
 ;;; Commentary:
 ;;; This includes global evil keybindings.
 ;;; Code:
+(eval-when-compile (require 'key-tree))
 (require 'rc)
 
-(requiring (evil evil-leader key-chord mu4e ranger exwm)
-
-	   ;; Use space as the leader.
-	   (evil-leader/set-leader "<SPC>")
+(requiring (evil evil-leader key-chord mu4e ranger exwm key-tree)
 
 	   ;; Free up space and ret in normal mode.
 	   (dolist (key (list (kbd "RET") " "))
@@ -15,7 +13,7 @@
 	      evil-motion-state-map evil-normal-state-map
 	      key))
 
-	   (evil-leader/set-key-tree
+	   (key-tree/add-bindings
 	    "f" ("File"
 		 "f" "Find File" 'find-file
 		 "F" "File Manager" 'deer)

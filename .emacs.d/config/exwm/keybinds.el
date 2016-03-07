@@ -167,10 +167,6 @@
 	    (kbd "C-s-<backspace>")
 	    'delete-other-windows)
 
-	   ;; Ket for global vim binds.
-	   ;; 838860 is (kbd "s-<SPC">)
-	   (add-to-list 'exwm-input-prefix-keys 8388640)
-
 	   (requiring (buffer-move)
 		      (mapc (lambda (atom)
 			      (exwm-input-set-key (car atom) (cdr atom)))

@@ -1,10 +1,11 @@
 ;;; keybinds --- Leader bindings.
 ;;; Commentary:
 ;;; Code:
+(eval-when-compile (require 'key-tree))
 (require 'rc)
 
-(requiring (evil evil-leader paredit)
-	   (evil-leader/set-key-tree-for-mode
+(requiring (key-tree paredit)
+	   (key-tree/add-mode-bindings
 	    emacs-lisp-mode
 	    "l" ("Lisp Editing"
 		 "(" "Open Clause" 'paredit-open-round

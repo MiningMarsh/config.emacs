@@ -33,15 +33,15 @@
     (unless already
       (package-refresh-contents)
       (setq already t)))
-(advice-add 'package-refresh-contents
-	    :after
-	    (lambda (&rest args)
+  (advice-add 'package-refresh-contents
+	      :after
+	      (lambda (&rest args)
 
-		  (setq already t)
+		(setq already t)
 
-	      ;; Print a timestamp to the cache file.
-	      (to-file (config-file "last-updated")
-		       (decode-time)))))
+		;; Print a timestamp to the cache file.
+		(to-file (config-file "last-updated")
+			 (decode-time)))))
 
 (advice-add 'package-install
 	    :after
@@ -337,28 +337,28 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 (defmacro requiring (libs &rest body)
   "Let you require multiple LIBS things without quoting them.
 Only run BODY if they could be loaded."
-  `(when (and
-	  ,@(mapcar
-	     (lambda (lib)
-	       `(progn
+	  `(when (and
+		 ,@(mapcar
+		    (lambda (lib)
+		      `(progn
 
-		  ;; If the package is not available remotely or locally, spit
-		  ;; an error message.
-		  (if (not (or (feature-exists (quote ,lib))
-					   (package-refresh-contents-if-not-already)
-		  (feature-exists (quote ,lib))))
-		      (progn
-			(message "Could not install package/load feature '%s'" (quote ,lib))
-			nil)
-		    (progn
-		      (package-refresh-contents-if-needed)
-		      (package-install-or-upgrade-if-needed (quote ,lib))
-		      (package-mark (quote ,lib))
-		      (if ,(string-match ".*-theme" (symbol-name lib))
-			  t
-			(require (quote ,lib) nil 'noerror))))))
-	     libs))
-     ,@body))
+			 ;; If the package is not available remotely or locally, spit
+			 ;; an error message.
+			 (if (not (or (feature-exists (quote ,lib))
+				      (package-refresh-contents-if-not-already)
+				      (feature-exists (quote ,lib))))
+			     (progn
+			       (message "Could not install package/load feature '%s'" (quote ,lib))
+			       nil)
+			   (progn
+			     (package-refresh-contents-if-needed)
+			     (package-install-or-upgrade-if-needed (quote ,lib))
+			     (package-mark (quote ,lib))
+			     (if ,(string-match ".*-theme" (symbol-name lib))
+				 t
+			       (require (quote ,lib) nil 'noerror))))))
+		    libs))
+	    ,@body))
 
 (defmacro defeat (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
