@@ -43,6 +43,13 @@
 		(to-file (config-file "last-updated")
 			 (decode-time)))))
 
+(advice-add 'package-install-from-archive
+	    :after
+	    (lambda (&rest args)
+	      (unless package-startup-finished
+		(setq package-installed-on-startup
+		      (1+ package-installed-on-startup)))))
+
 (advice-add 'package-install
 	    :after
 	    (lambda (&rest args)

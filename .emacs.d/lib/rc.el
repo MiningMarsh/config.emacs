@@ -122,6 +122,13 @@
 	 syms)
      ,@body))
 
+(defmacro with-lexical (syms &rest body)
+  "Make the bindings of SYMS lexical, then execute BODY."
+  `(lexical-let ,(mapcar
+		  (lambda (sym) (list sym sym))
+		  syms)
+     ,@body))
+
 (defmacro with-gensym (sym &rest body)
   "Easier to read than with-gensyms for one var."
   `(with-gensyms (,sym)

@@ -76,7 +76,7 @@
 	    (kbd "s-<return>")
 	    (lambda ()
 	      (interactive)
-	      (ansi-term (getenv "SHELL"))))
+	      (start-process-shell-command "Terminal" nil "urxvtc")))
 
 	   (exwm-input-set-key
 	    (kbd "s-|")

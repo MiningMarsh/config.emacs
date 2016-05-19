@@ -62,7 +62,7 @@
 					      command)
 				     (funcall describe-key-fn
 					      (substring (concat prefix " " key) 1)
-					      description)))))))))
+					      value)))))))))
 
 	    ;; Recurse on the tree.
 	    (set-key-tree "" "All" key-tree))
