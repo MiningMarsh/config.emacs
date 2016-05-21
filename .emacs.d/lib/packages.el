@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requires cl-lib package)
+(requires cl cl-lib package)
 
 ;; Add package repositories.
 (mapc (lambda (e) (add-to-list 'package-archives e))
@@ -20,6 +20,9 @@
 
 (defvar package-installed-on-startup 0
   "The number of packages installed on startup.")
+
+(defvar package-upgraded-on-startup 0
+  "The number of packages upgraded on startup.")
 
 (defvar package-removed-on-startup 0
   "The number of packages that were removed on startup.")
@@ -43,28 +46,6 @@
 		(to-file (config-file "last-updated")
 			 (decode-time)))))
 
-(advice-add 'package-install-from-archive
-	    :after
-	    (lambda (&rest args)
-	      (unless package-startup-finished
-		(setq package-installed-on-startup
-		      (1+ package-installed-on-startup)))))
-
-(advice-add 'package-install
-	    :after
-	    (lambda (&rest args)
-	      (unless package-startup-finished
-		(setq package-installed-on-startup
-		      (1+ package-installed-on-startup)))))
-
-(advice-add 'package-delete
-	    :after
-	    (lambda (&rest args)
-	      (unless package-startup-finished
-		(setq package-removed-on-startup
-		      (1+ package-removed-on-startup)))))
-
-
 (defun package-refresh-contents-if-needed (&optional interactive)
   "Refresh package contents if not already refreshed.  Print output if INTERACTIVE is non-nil."
   (interactive (list t))
@@ -76,11 +57,11 @@
 		   file-exists-p))
 	  ;; Second, check if the last update time was more than a day ago.
 	  (not (=  (-> (decode-time)
-		       fourth)
+		       cl-fourth)
 		   (-> "last-updated"
 		       config-file
 		       read-file-last
-		       fourth))))
+		       cl-fourth))))
 
       ;; Refresh the package contents database.
       (with-temp-message "Refreshing package contents database..."
@@ -131,18 +112,21 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 	  package-marked-list
 	  (package-deps package t)))))
 
-(defun package-finish ()
+(defun package-uninstall-all-unmarked ()
   "Uninstall all unneeded packages."
   (unless package-startup-finished
     (mapc (lambda (p)
-	    (package-uninstall p))
+	    (package-uninstall p)
+	    (unless package-startup-finished
+	      (setq package-removed-on-startup
+		    (1+ package-removed-on-startup))))
 	  (cl-remove-if
 	   (lambda (p) (member p package-marked-list))
 	   (mapcar 'car package-alist)))
     (setq package-startup-finished t)))
 
 (add-hook 'after-config-hook
-	  'package-finish)
+	  'package-uninstall-all-unmarked)
 
 (defun package-description-remote (package)
   "Return the description of PACKAGE if it is available remotely, nil otherwise."
@@ -304,6 +288,11 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
        ;; Upgrade any dependencies needed.
        (mapc 'package-install-or-upgrade-if-needed (package-deps package))
 
+       ;; Increment package upgrade count.
+       (unless package-startup-finished
+	 (setq package-upgraded-on-startup
+	       (1+ package-upgraded-on-startup)))
+
        (when interactive
 	 (message "Upgraded '%s'." package))
 
@@ -324,48 +313,54 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 
 (defun package-install-or-upgrade-if-needed (package)
   "Install PACKAGE if it is not already installed, otherwise upgrade PACKAGE if it is outdated."
-  (interactive
-   (->>
-    (let1 packages
-	  (->> package-alist
-	       (append package-archive-contents)
-	       (mapcar 'car)
-	       cl-remove-duplicates)
-	  (completing-read "Install or upgrade package: " packages 'identity t))
-    intern-soft
-    list))
 
+  ;; Interactive prompt.
+  (-> (completing-read "Install or upgrade package: "
+		       (->> package-alist
+			    (append package-archive-contents)
+			    (mapcar 'car)
+			    cl-remove-duplicates)
+		       'identity t)
+      intern-soft
+      list
+      interactive)
+
+  ;; Actually perform the upgrade/install.
   (when (feature-exists package)
     (if (and (package-description-remote package)
 	     (not (package-installed-p package)))
-	(package-install package)
+	(progn
+	  (unless package-startup-finished
+	    (setq package-installed-on-startup
+		  (1+ package-installed-on-startup)))
+	  (package-install package))
       (package-upgrade-if-needed package))))
 
 (defmacro requiring (libs &rest body)
   "Let you require multiple LIBS things without quoting them.
 Only run BODY if they could be loaded."
-	  `(when (and
-		 ,@(mapcar
-		    (lambda (lib)
-		      `(progn
+  `(when (and
+	  ,@(mapcar
+	     (lambda (lib)
+	       `(progn
 
-			 ;; If the package is not available remotely or locally, spit
-			 ;; an error message.
-			 (if (not (or (feature-exists (quote ,lib))
-				      (package-refresh-contents-if-not-already)
-				      (feature-exists (quote ,lib))))
-			     (progn
-			       (message "Could not install package/load feature '%s'" (quote ,lib))
-			       nil)
-			   (progn
-			     (package-refresh-contents-if-needed)
-			     (package-install-or-upgrade-if-needed (quote ,lib))
-			     (package-mark (quote ,lib))
-			     (if ,(string-match ".*-theme" (symbol-name lib))
-				 t
-			       (require (quote ,lib) nil 'noerror))))))
-		    libs))
-	    ,@body))
+		  ;; If the package is not available remotely or locally, spit
+		  ;; an error message.
+		  (if (not (or (feature-exists (quote ,lib))
+			       (package-refresh-contents-if-not-already)
+			       (feature-exists (quote ,lib))))
+		      (progn
+			(message "Could not install package/load feature '%s'" (quote ,lib))
+			nil)
+		    (progn
+		      (package-refresh-contents-if-needed)
+		      (package-install-or-upgrade-if-needed (quote ,lib))
+		      (package-mark (quote ,lib))
+		      (if ,(string-match ".*-theme" (symbol-name lib))
+			  t
+			(require (quote ,lib) nil 'noerror))))))
+	     libs))
+     ,@body))
 
 (defmacro defeat (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."

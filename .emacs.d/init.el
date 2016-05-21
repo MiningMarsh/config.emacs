@@ -192,7 +192,8 @@
 				    ";;; There are %d packages installed."
 				    ";;; ➡ There are %d builtin packages installed."
 				    ";;; ➡ There are %d user-requested packages installed."
-				    ";;; ➡ %d packages were installed on startup."
+				    ";;; ➡ %d packages were added on startup."
+				    ";;; ➡ %d packages were upgraded on startup."
 				    ";;; ➡ %d packages were removed on startup."
 				    )
 		    load-time
@@ -204,6 +205,7 @@
 		    systemp
 		    userp
 		    package-installed-on-startup
+		    package-upgraded-on-startup
 		    package-removed-on-startup))
 
       ;; Signal that init has finished.

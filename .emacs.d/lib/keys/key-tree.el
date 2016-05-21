@@ -3,10 +3,13 @@
 ;;; Code:
 (require 'rc)
 
-(defeat key-tree (evil evil-leader which-key exwm)
+(defeat key-tree (evil evil-leader which-key)
+
   ;; Key for global vim binds.
-  ;; 838860 is (kbd "s-<SPC">)
-  (add-to-list 'exwm-input-prefix-keys 8388640)
+  ;;(add-to-list 'exwm-input-prefix-keys (elt (kbd "M-<SPC>") 0))
+  (unless (boundp 'meta-space-map)
+    (define-prefix-command 'meta-space-map)
+    (global-set-key (kbd "M-<SPC>") 'meta-space-map))
 
   ;; Use space as the leader.
   (evil-leader/set-leader "<SPC>")
@@ -23,8 +26,8 @@
 		(while tree
 
 		  ;; Pop the next key, and the next description/subtree.
-		  (let* ((key (first tree))
-			 (value (second tree))
+		  (let* ((key (cl-first tree))
+			 (value (cl-second tree))
 			 (new-tree (cddr tree)))
 		    (setq tree new-tree)
 
@@ -40,7 +43,9 @@
 			  ;; Add the key-description for the current subtree.
 			  (setq result
 				(nconc result
-				       (funcall describe-key-fn (substring (concat prefix " " key) 1) description)))
+				       (funcall describe-key-fn
+						(substring (concat prefix " " key) 1)
+						description)))
 
 			  ;; Recurse
 			  (set-key-tree
@@ -76,12 +81,12 @@
        (list
 	`(which-key-add-key-based-replacements
 	   ,(concat "<SPC> " key-sequence) ,description
-	   ,(concat "s-<SPC> " key-sequence) ,description)))
+	   ,(concat "M-<SPC> " key-sequence) ,description)))
 
      (lambda (key-sequence command)
        (list
-	`(exwm-input-set-key
-	  (kbd ,(concat "s-<SPC> " key-sequence)) ,command)
+	`(global-set-key
+	  (kbd ,(concat "M-<SPC> " key-sequence)) ,command)
 	`(evil-leader/set-key ,(kbd key-sequence) ,command)))
 
      key-tree))
