@@ -7,6 +7,5 @@
 	   (add-hooks (prog-mode-hook)
 		      (setq column-enforce-column 81)
 		      (column-enforce-mode)
-		      (message "test")
 		      (column-marker-1 80)))
 ;;; enforce-column-mode.el ends here
