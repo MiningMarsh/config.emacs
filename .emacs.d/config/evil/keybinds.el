@@ -5,7 +5,7 @@
 (eval-when-compile (require 'key-tree))
 (require 'rc)
 
-(requiring (evil evil-leader key-chord mu4e ranger key-tree)
+(requiring (evil evil-leader key-chord ranger key-tree os)
 
 	   ;; Free up space and ret in normal mode.
 	   (dolist (key (list (kbd "RET") " "))
@@ -49,5 +49,17 @@
 		 "l" ("Launch Process"
 		      "f" "Launch Firefox" (interactively (launch-program "firefox"))
 		      "l" "Launch Libreoffice" (interactively (launch-program "libreoffice"))
-		      "e" "Launch ERC" 'erc-tls))))
+		      "e" "Launch ERC" 'erc-tls)))
+
+	   (os/when-mac
+	    (key-tree/add-bindings
+	     "o" ("Operating System"
+		  "a" ("Account"
+		       "l" "Lock" (interactively (mac/lock-account))
+		       "L" "Log Out" (interactively (mac/log-out)))
+
+		  "p" ("Power"
+		       "s" "Sleep" (interactively (mac/sleep))
+		       "S" "Shutdown" (interactively (mac/shutdown))
+		       "r" "Restart" (interactively (mac/restart)))))))
 ;;; keybinds.el ends here

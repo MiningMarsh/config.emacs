@@ -62,7 +62,7 @@
      (float-current-time ()
 			 "Return float time, ignores upper bits."
 			 (let ((current (current-time)))
-			   (+ (second current) (/ (third current) 10000000.0))))
+			   (+ (cl-second current) (/ (cl-third current) 10000000.0))))
 
      (compile-file-cached (path &optional load)
 			  "Compiles a file and puts it in the storage cache."
