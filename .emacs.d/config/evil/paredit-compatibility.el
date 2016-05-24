@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (paredit evil-paredit)
+(packages/requires (paredit evil-paredit)
 	   ;; Enable evil compatibility mode.
 	   (add-hooks (paredit-mode-hook)
 		      evil-paredit-mode))

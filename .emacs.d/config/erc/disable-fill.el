@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc)
+(packages/requires (erc)
 	   (remove-from-list 'erc-modules 'fill)
 	   (erc-fill-mode 0)
 	   (remove-from-list 'erc-modules 'stamp)

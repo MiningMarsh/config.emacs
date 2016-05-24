@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (org-bullets)
+(packages/requires (org-bullets)
 
 	   ;; Add pretty bullets for sub-headers.
 	   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))

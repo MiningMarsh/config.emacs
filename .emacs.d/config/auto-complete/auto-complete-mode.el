@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (auto-complete yasnippet)
+(packages/requires (auto-complete yasnippet)
 		   (ac-config-default)
 		   (add-to-list 'ac-sources 'ac-source-yasnippet)
 		   (global-auto-complete-mode t)

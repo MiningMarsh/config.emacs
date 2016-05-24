@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (ranger)
+(packages/requires (ranger)
 	   (setq ranger-override-dired t
 		 ranger-cleanup-on-disable t
 		 ranger-cleanup-eagerly t

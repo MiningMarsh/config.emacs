@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (column-enforce-mode column-marker)
+(packages/requires (column-enforce-mode column-marker)
 	   (add-hooks (prog-mode-hook)
 		      (setq column-enforce-column 81)
 		      (column-enforce-mode)

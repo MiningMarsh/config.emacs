@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (which-key)
+(packages/requires (which-key)
 	   ;; Setup which-key
 	   (which-key-setup-minibuffer)
 	   (setq which-key-popup-type 'minibuffer)

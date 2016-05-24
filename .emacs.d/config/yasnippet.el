@@ -3,9 +3,9 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (yasnippet)
+(packages/requires (yasnippet)
 		   (yas-global-mode 1)
-		   (requiring (auto-complete)
+		   (packages/requires (auto-complete)
 					  (defer-after-init
 						(when (auto-complete)
 						  (add-to-list 'ac-sources 'ac-source-yasnippet)))))

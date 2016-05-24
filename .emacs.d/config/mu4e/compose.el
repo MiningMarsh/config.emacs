@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (mu4e org-mu4e)
+(packages/requires (mu4e org-mu4e)
 
 	   (setq org-mu4e-convert-to-html t)
 

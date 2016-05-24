@@ -3,5 +3,5 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (puppet-mode))
+(packages/requires (puppet-mode))
 ;;; puppet.el ends here

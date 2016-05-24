@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (mu4e)
+(packages/requires (mu4e)
 	   (setq mu4e-maildir "/home/miningmarsh/.mail"))
 ;;; maildir.el ends here

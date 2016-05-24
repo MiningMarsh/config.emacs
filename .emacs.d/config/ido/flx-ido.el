@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (flx-ido)
+(packages/requires (flx-ido)
 	   (flx-ido-mode 1)
 	   ;; Disable ido faces to see flx highlights.
 	   (setq ido-enable-flex-matching t)

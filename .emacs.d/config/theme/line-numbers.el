@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (relative-line-numbers linum)
+(packages/requires (relative-line-numbers linum)
 
 	   (add-hooks (evil-motion-state-entry-hook
 		       evil-operator-state-entry-hook)

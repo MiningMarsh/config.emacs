@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (smiley erc)
+(packages/requires (smiley erc)
 	   (add-to-list 'smiley-regexp-alist '("\\(:-?]\\)\\W" 1 "forced"))
 	   (add-to-list 'smiley-regexp-alist '("\\s-\\(:-?/\\)\\W" 1 "wry"))
 	   (add-to-list 'smiley-regexp-alist '("\\(:-?(\\)\\W" 1 "sad"))

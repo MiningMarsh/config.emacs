@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc)
+(packages/requires (erc)
 	   (add-hooks (erc-mode-hook)
 		      (line-number-mode -1)
 		      (linum-mode -1)))

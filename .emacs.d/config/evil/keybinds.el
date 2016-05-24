@@ -5,7 +5,7 @@
 (eval-when-compile (require 'key-tree))
 (require 'rc)
 
-(requiring (evil evil-leader key-chord ranger key-tree os)
+(packages/requires (evil evil-leader key-chord ranger key-tree os)
 
 	   ;; Free up space and ret in normal mode.
 	   (dolist (key (list (kbd "RET") " "))

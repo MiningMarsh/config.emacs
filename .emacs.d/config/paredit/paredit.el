@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (paredit)
+(packages/requires (paredit)
 
 	   ;; Enable paredir for various modes.
 	   (add-hooks (emacs-lisp-mode-hook

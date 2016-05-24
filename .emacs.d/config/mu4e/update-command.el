@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (mu4e)
+(packages/requires (mu4e)
 	   (setq mu4e-get-mail-command "update-mail"))
 ;;; update-command.el ends here

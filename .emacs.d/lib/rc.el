@@ -3,7 +3,8 @@
 ;;; Standard library that can always be assumed to be loaded when writing
 ;;; config files.
 ;;; Code:
-(require 'cl-lib 'package)
+(require 'cl-lib)
+(require 'cl)
 
 ;; Turn on lexical binding by default.
 (setq lexical-binding t)
@@ -547,11 +548,24 @@ using COMPARE-FN."
   (interactive)
   (kill-process "music"))
 
+(defmacro guard (var &rest body)
+  "Set VAR to `t` if it is `nil`, and run BODY if var is `nil`."
+  (with-gensym
+   result
+   `(unless ,var
+      (setq ,result (progn ,@body))
+      (setq ,var t)
+      ,result)))
+
+(defmacro only-once (&rest body)
+  "Ensure that BODY is only run once."
+  (with-gensyms
+   (once result) 
+   `(unless (boundp (quote ,once))
+      (setq ,result (progn ,@body))
+      (setq ,once t)
+      ,result)))
+
 ;; Signal that RC has been loaded.
 (provide 'rc)
-
-;; Init package subsystem.
-(requires packages)
-
-
 ;;; rc.el ends here

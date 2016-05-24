@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (linum)
+(packages/requires (linum)
 	   (add-hooks (org-mode-hook)
 		      (linum-mode -1)
 		      (line-number-mode -1)))

@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (mu4e mu4e-fixes mu4e-accounts)
+(packages/requires (mu4e mu4e-fixes mu4e-accounts)
 	   
 	   (setq mu4e-account-list
 		 (list (make-mu4e-account

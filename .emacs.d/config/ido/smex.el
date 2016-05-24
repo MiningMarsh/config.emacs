@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (smex)
+(packages/requires (smex)
 	   (smex-initialize)
 	   (global-set-key (kbd "M-x") 'smex)
 	   (global-set-key (kbd "M-X") 'mex-major-mode-commands)

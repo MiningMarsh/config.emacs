@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil evil-leader gud)
+(packages/requires (evil evil-leader gud)
 	   (evil-leader/set-key-for-mode 'gud-mode
 	     "b" 'gud-break
 	     "r" 'gud-run

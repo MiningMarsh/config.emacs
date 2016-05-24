@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (key-tree function-args)
+(packages/requires (key-tree function-args)
 
 		   (key-tree/add-mode-bindings
 			c-mode

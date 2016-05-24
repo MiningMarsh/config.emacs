@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (slime slime-autoloads)
+(packages/requires (slime slime-autoloads)
 	   (slime-setup
 	    '(slime-fancy
 	      slime-repl

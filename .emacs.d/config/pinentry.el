@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (pinentry)
+(packages/requires (pinentry)
 	   (pinentry-start))
 ;;; pinentry.el ends here

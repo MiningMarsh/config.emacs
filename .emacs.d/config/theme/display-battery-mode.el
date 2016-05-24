@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (fancy-battery)
+(packages/requires (fancy-battery)
 	   (defer-after-init
 	     (fancy-battery-mode 1)
 	     (setq fancy-battery-show-percentage t)))

@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (sr-speedbar key-tree)
+(packages/requires (sr-speedbar key-tree)
 	   (add-hooks (speedbar-mode-hook)
 		      (linum-mode -1)
 		      (relative-line-numbers-mode -1)

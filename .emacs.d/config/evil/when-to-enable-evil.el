@@ -4,7 +4,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil evil-leader)
+(packages/requires (evil evil-leader)
 	   (global-evil-leader-mode 1)
 	   (evil-mode 1))
 ;;; when-to-enable-evil.el ends here

@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc erc-nick-colors)
+(packages/requires (erc erc-nick-colors)
 	   ;; Define the list of colors to use when coloring IRC nicks.
 	   (setq erc-nick-colors-list
 		 '("blue"

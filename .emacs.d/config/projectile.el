@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (projectile)
+(packages/requires (projectile)
 		   (projectile-global-mode))
 ;;; projectile.el ends here

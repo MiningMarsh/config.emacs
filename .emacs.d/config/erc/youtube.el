@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc erc-yt)
+(packages/requires (erc erc-yt)
 	   (add-to-list 'erc-modules 'youtube)
 	   (erc-update-modules)
 	   (setq erc-yt-browse-function #'play-youtube))

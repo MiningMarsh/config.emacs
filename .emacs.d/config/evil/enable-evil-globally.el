@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil)
+(packages/requires (evil)
 	   ;; Enable evil mode on startup.
 	   (evil-mode 1))
 ;;; enable-evil-globally.el ends here

@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc)
+(packages/requires (erc)
 	   (add-to-list 'erc-modules 'ring))
 ;;; ring.el ends here

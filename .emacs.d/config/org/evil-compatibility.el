@@ -4,5 +4,5 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil evil-leader org evil-org))
+(packages/requires (evil evil-leader org evil-org))
 ;;; evil-compatibility.el ends here

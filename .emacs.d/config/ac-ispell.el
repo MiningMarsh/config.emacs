@@ -2,8 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(requiring (auto-complete ac-ispell)
+(packages/requires (auto-complete ac-ispell)
 	   (setq ispell-complete-word-dict (format "%s/.dictionary"
 						   (getenv "HOME"))
 		 ac-ispell-requires 3

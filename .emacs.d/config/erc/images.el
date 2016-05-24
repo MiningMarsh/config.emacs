@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc erc-image)
+(packages/requires (erc erc-image)
 	   (add-to-list 'erc-modules 'image)
 	   (erc-update-modules)
 	   (setq erc-image-inline-rescale 300))

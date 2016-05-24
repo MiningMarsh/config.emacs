@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (semantic)
+(packages/requires (semantic)
 		   (add-hooks (c-mode)
 					  (semantic-mode)
 					  (semantic-stickyfunc-mode)))

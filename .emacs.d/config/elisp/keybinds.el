@@ -4,7 +4,7 @@
 (eval-when-compile (require 'key-tree))
 (require 'rc)
 
-(requiring (key-tree paredit)
+(packages/requires (key-tree paredit)
 	   (key-tree/add-mode-bindings
 	    emacs-lisp-mode
 	    "l" ("Lisp Editing"

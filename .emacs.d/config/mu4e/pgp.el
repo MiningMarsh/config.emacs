@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (mu4e epg-config)
+(packages/requires (mu4e epg-config)
 
 	   (setq mml2015-use 'epg
 		 epg-user-id "joshua.songy@gmail.com"

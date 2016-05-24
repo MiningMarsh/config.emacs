@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (ido ido-ubiquitous ido-yes-or-no)
+(packages/requires (ido ido-ubiquitous ido-yes-or-no)
 	   (ido-mode 1)
 	   (ido-everywhere 1)
 	   (ido-ubiquitous-mode 1)

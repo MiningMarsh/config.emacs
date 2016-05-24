@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc)
+(packages/requires (erc)
 	   (setq erc-join-buffer 'bury))
 ;;; bury-buffers.el ends here

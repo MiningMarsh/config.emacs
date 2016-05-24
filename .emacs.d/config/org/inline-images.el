@@ -3,6 +3,6 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (org)
+(packages/requires (org)
 	   (setq org-startup-with-inline-images t))
 ;;; inline-images.el ends here

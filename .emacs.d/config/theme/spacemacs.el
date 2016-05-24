@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (spacemacs-theme spaceline fancy-battery spaceline-segments spaceline-config)
+(packages/requires (spacemacs-theme spaceline fancy-battery spaceline-segments spaceline-config)
 	     (setq powerline-default-separator 'contour)
 	     (load-theme 'spacemacs-dark t)
 	     (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state

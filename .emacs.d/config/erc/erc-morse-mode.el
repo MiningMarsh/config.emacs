@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (erc)
+(packages/requires (erc)
 	   (defvar erc-unmorse-string "[morse]"
 	     "String to be used so we see it's morse")
 	   (defun erc-unmorse ()

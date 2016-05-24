@@ -3,7 +3,7 @@
 ;;; Code:
 (require 'rc)
 
-(requiring (evil evil-leader mu4e mu4e-fixes mu4e-accounts)
+(packages/requires (evil evil-leader mu4e mu4e-fixes mu4e-accounts)
 	    ;;(evil-define-key 'normal 'mu4e-headers-mode-map
 	      ;;(kbd "RET") 'mu4e-headers-view-message
 	      ;;"j" 'mu4e-headers-next
