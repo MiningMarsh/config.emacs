@@ -6,8 +6,6 @@
 ;;; Code:
 (require 'cl-lib)
 
-(message "This is checkpoint 1")
-
 (defvar bootstrap/after-config-hook nil
   "List of hooks to run after config has been read.")
 
@@ -117,8 +115,6 @@
 (bootstrap/-record-elapsed-time
  bootstrap/startup-time
 
-(message "This is checkpoint 2")
-
  ;; Only recompile the init file if needed.
  (bootstrap/-compile-file "~/.emacs.d/init.el")
 
@@ -136,8 +132,6 @@
       (add-to-list 'load-path path)))
   "~/.emacs.d/lib/")
 
-(message "This is checkpoint 3")
-
  ;; Setup the themepath.
  (bootstrap/-map-dir
   (lambda (path)
@@ -145,13 +139,9 @@
       (add-to-list 'custom-theme-load-path path)))
   "~/.emacs.d/theme/")
 
-(message "This is checkpoint 4")
-
  ;; Load the package manager and standard library if we haven't already.
  (require 'rc)
  (require 'packages)
-
-(message "This is checkpoint 5")
 
  ;; Byte compile everything.
  (mapc (lambda (path)
@@ -162,8 +152,6 @@
 	  (format "~/.emacs.d/%s/" path)))
        '("lib" "theme"))
 
-(message "This is checkpoint 6")
-
  ;; Load files.
  (bootstrap/-map-dir
   (lambda (path)
@@ -171,13 +159,9 @@
       (bootstrap/-with-ignored-errors (bootstrap/-compile-and-cache-file path t))))
   "~/.emacs.d/config/")
 
-(message "This is checkpoint 7")
-
  ;; Run post config hooks.
  (dolist (hook bootstrap/after-config-hook)
    (funcall hook)))
-
-(message "This is checkpoint 8")
 
 ;; Clear the message buffer.
 (message "")
@@ -214,8 +198,6 @@
 		packages/installed
 		packages/upgraded
 		packages/removed)))
-
-(message "This is checkpoint 9")
 
 ;; Signal that init has finished.
 (provide 'bootstrap)
