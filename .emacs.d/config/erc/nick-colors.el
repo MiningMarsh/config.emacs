@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (erc erc-nick-colors)
 	   ;; Define the list of colors to use when coloring IRC nicks.

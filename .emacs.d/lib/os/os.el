@@ -2,8 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat os ()
+(packages/define os ()
 
   (defvar os/mac :mac
     "The symbol used to represent the OS X operating system.")
@@ -29,8 +30,8 @@
   (defun os/windows? ()
     (equal os/type os/windows))
 
-  (defmacro os/when-mac (&rest body)
+  (cl-defmacro os/when-mac (&rest body)
     `(when (os/mac?)
-       (requiring (mac)
+       (packages/requires (mac)
 		  ,@body))))
 ;;; os.el ends here

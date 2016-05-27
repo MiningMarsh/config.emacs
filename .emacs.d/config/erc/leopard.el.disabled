@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (requiring (erc erc-input-hooks)
 	   (erc-add-input-hook "keyboard" "leopard"))

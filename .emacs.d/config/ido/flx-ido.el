@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (flx-ido)
 	   (flx-ido-mode 1)

@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 ;; TODO: Fix add-hooks so it can handle irregular hooks like these.
 (add-hook 'after-make-frame-functions

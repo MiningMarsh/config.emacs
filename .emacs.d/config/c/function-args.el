@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (function-args)
 		   (add-hooks (c-mode-hook)

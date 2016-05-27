@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (slime slime-autoloads)
 	   (setq inferior-lisp-program "sbcl --dynamic-space-size 4096"))

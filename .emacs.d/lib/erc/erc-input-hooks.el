@@ -3,8 +3,9 @@
 ;;; Used for greentext, mostly.
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat erc-input-hooks (erc)
+(packages/define erc-input-hooks (erc)
 
   (defvar erc-input-hooks-alist '()
     "Assoc list of hook tests to hook functions.")

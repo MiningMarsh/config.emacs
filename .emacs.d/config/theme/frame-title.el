@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (setq frame-title-format
       ;; I stole this from some guy online, what the fuck is this shit? Who the

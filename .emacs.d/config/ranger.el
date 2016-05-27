@@ -3,6 +3,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (ranger)
 	   (setq ranger-override-dired t

@@ -168,8 +168,7 @@
  (bootstrap/-map-dir
   (lambda (path)
     (when (bootstrap/-elisp-file? path)
-      ;;(bootstrap/-with-ignored-errors (bootstrap/-compile-and-cache-file path t))
-      (bootstrap/-compile-and-cache-file path t)))
+      (bootstrap/-with-ignored-errors (bootstrap/-compile-and-cache-file path t))))
   "~/.emacs.d/config/")
 
 (message "This is checkpoint 7")

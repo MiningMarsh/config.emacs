@@ -3,8 +3,9 @@
 ;;; This package can be used to rewrite or surpress Emacs messages.
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat message-filter ()
+(packages/define message-filter ()
 
   (defvar message-filters '()
     "Assoc-map of trigger to replacement functions for messages.")

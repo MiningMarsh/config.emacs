@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (sr-speedbar key-tree)
 	   (add-hooks (speedbar-mode-hook)

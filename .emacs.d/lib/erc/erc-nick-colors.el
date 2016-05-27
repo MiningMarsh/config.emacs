@@ -3,8 +3,9 @@
 ;;; Stolen from emacs-wiki.
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat erc-nick-colors (erc)
+(packages/define erc-nick-colors (erc)
 	   ;; Pool of colors to use when coloring IRC nicks.
 	   (defvar erc-nick-colors-list
 	     '("green" "blue" "red"

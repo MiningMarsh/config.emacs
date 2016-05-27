@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (erc erc-input-hooks)
 	   (erc-add-input-hook "\\[ITAL\\]\\(.*\\)\\[ITAL\\]" (format "%c\\1%c" 29 29)))

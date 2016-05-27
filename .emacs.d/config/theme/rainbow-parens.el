@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (rainbow-delimiters)
 	   (add-hooks (prog-mode-hook)

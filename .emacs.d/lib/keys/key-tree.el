@@ -2,8 +2,10 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
+(require 'packages)
 
-(defeat key-tree (evil evil-leader which-key)
+(packages/define key-tree (evil evil-leader which-key)
 
   ;; Key for global vim binds.
   ;;(add-to-list 'exwm-input-prefix-keys (elt (kbd "M-<SPC>") 0))

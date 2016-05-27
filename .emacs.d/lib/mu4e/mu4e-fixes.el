@@ -3,8 +3,9 @@
 ;;; Fixes some mu4e retardation.
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat mu4e-fixes (mu4e)
+(packages/define mu4e-fixes (mu4e)
 
   (defun mu4e-headers-prev-unread ()
     "Mu4e developers are retarded, this fixes that"

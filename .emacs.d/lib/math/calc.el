@@ -2,8 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat calc ()
+(packages/define calc ()
 
   (defun resize-vector (size vector)
     (let1 len (length vector)

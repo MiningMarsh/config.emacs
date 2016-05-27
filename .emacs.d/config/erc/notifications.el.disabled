@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (requiring (erc)
 	   (add-to-list 'erc-modules 'notifications))

@@ -301,7 +301,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 (defun packages/-upgrade-if-needed (package)
   "Upgrade PACKAGE if not already upgraded."
   (when (and (packages/feature-exists package)
-	     (not (package-latest-p package)))
+	     (not (packages/-latest-installed? package)))
     (packages/upgrade package)))
 
 (defun packages/-install-or-upgrade-if-needed (package)
@@ -356,7 +356,7 @@ Only run BODY if they could be loaded."
 
 (defmacro packages/define (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
-  `(packages/require ,deps
+  `(packages/requires ,deps
 	      ,@body
 	      (provides ,feature-name)))
 

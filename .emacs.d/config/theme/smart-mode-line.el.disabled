@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (requiring (smart-mode-line nyan-mode)
 	   ;; Technically this is "wrong", "disgusting", and "literally hitler",

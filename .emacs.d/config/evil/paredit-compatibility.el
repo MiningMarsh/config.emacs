@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (paredit evil-paredit)
 	   ;; Enable evil compatibility mode.

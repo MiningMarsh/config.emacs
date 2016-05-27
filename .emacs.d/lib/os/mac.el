@@ -2,8 +2,9 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat mac (os)
+(packages/define mac (os)
   (defun mac/lock-account ()
     "Lock the current user account."
     (start-process "Lock Account" "*Lock Account*"

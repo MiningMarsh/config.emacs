@@ -3,6 +3,7 @@
 ;;; Code:
 (eval-when-compile (require 'key-tree))
 (require 'rc)
+(require 'packages)
 
 (packages/requires (key-tree paredit)
 	   (key-tree/add-mode-bindings

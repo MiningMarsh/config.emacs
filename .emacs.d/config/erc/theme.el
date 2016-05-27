@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (custom-set-faces
  '(erc-input-face ((t (:foreground "brightyellow"))))

@@ -2,10 +2,11 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (setq lexical-binding t)
 
-(defeat pass (password-store)
+(packages/define pass (password-store)
 
   (defvar pass/pinentry-program "ask-gpg-pin"
     "The program to run to get user gpg pin.")

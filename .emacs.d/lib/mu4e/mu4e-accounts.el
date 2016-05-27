@@ -3,8 +3,9 @@
 ;;; Modified version of Bryan's shit.
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
-(defeat mu4e-accounts (mu4e mu4e-fixes)
+(packages/define mu4e-accounts (mu4e mu4e-fixes)
 
   (cl-defstruct mu4e-account
     name

@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (erc)
 	   (setq erc-hide-list '("JOIN" "PART" "QUIT")))

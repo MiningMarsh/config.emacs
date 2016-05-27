@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (packages/requires (smiley erc)
 	   (add-to-list 'smiley-regexp-alist '("\\(:-?]\\)\\W" 1 "forced"))

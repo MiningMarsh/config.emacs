@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (setq backup-directory-alist
       (assoc-map "." "~/.emacs.d/backups"))

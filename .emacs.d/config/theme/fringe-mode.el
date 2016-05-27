@@ -2,6 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 (require 'rc)
+(require 'packages)
 
 (defun disable-window-fringe ()
   "Disable fringe in current window."
