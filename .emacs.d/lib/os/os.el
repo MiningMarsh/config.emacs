@@ -30,8 +30,10 @@
   (defun os/windows? ()
     (equal os/type os/windows))
 
+  (when (os/mac?)
+    (packages/requires (mac)))
+
   (cl-defmacro os/when-mac (&rest body)
     `(when (os/mac?)
-       (packages/requires (mac)
-		  ,@body))))
+       ,@body)))
 ;;; os.el ends here

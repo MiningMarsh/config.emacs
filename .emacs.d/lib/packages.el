@@ -39,13 +39,12 @@
 	      (to-file (config-file "last-updated")
 		       (decode-time))))
 
-(defun packages/-refresh-contents-if-needed (&optional interactive)
-  "Refresh package contents if not already refreshed.  Print output if INTERACTIVE is non-nil."
-  (interactive (list t))
+(defun packages/-refresh-contents-if-needed ()
+  "Refresh package contents if not already refreshed."
 
   ;; Only refresh if we have never refreshed, or haven't refreshed for at least
   ;; a day.
-  (if (or
+  (when (or
 
        ;;First check if we ever refreshed.
        (not (-> "last-updated"
@@ -62,10 +61,7 @@
 
       ;; Refresh the package contents database.
       (with-temp-message "Refreshing package contents database..."
-	(package-refresh-contents))
-
-    (when interactive
-      (message "Package contents do not need to be refreshed."))))
+	(package-refresh-contents))))
 
 (defun packages/-find-feature-path (feature)
   "Return a file path if FEATURE could be found in the 'load-path'."
@@ -144,15 +140,8 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
   (packages/-bind-descriptions (local remote) package
 			     (or remote local)))
 
-(defun packages/-latest-installed? (package &optional interactive)
-  "Return whether the installed version of PACKAGE is up to date.  Print interactive status when INTERACTIVE is non-nil."
-  (interactive (list
-		(intern-soft
-		 (completing-read "Check if package is up to date: "
-				  (mapcar 'car package-alist)
-				  'identity
-				  t))
-		t))
+(defun packages/-latest-installed? (package)
+  "Return whether the installed version of PACKAGE is up to date."
 
   ;; Grab the package descriptions.
   (packages/-bind-descriptions
@@ -169,31 +158,17 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 	   (package-version-local (package-desc-version package-local)))
 
        ;; Perform the version comparison.
-       (if (or (version-list-= package-version-remote package-version-local)
-	       (version-list-< package-version-remote package-version-local))
-	   (progn
-	     (when interactive
-	       (message "Latest version of '%s' is installed." package))
-	     t)
-	 (progn
-	   (when interactive
-	     (message "Installed version of '%s' is out of date." package)
-	     nil)))))))
+       (or (version-list-= package-version-remote package-version-local)
+	   (version-list-< package-version-remote package-version-local))))))
 
-(defun pn/uninstall-all-outdated (&optional interactive)
-  "Delete all outdated packages.  Print output if INTERACTIVE is non-nil."
-  (interactive (list t))
-  (let1 outdated (->> package-alist
-		      ;; Retrieves outdated packages.
-		      (mapcar 'cddr)
-		      remove-if-nil
-		      (apply #'append))
-	(when interactive
-	  (if outdated
-	      (message "Uninstalling %s outdated packages..."
-		       (length outdated))
-	    (message "No outdated packages found.")))
-	(mapc 'package-delete outdated)))
+(defun pn/uninstall-all-outdated ()
+  "Delete all outdated packages."
+  (->> package-alist
+       ;; Retrieves outdated packages.
+       (mapcar 'cddr)
+       remove-if-nil
+       (apply #'append)
+       (mapc 'package-delete)))
 
 (defun packages/uninstall-outdated (package &optional interactive)
   "Delete all outdated versions of PACKAGE that are installed.  Print interactive output if INTERACTIVE is non-nil."
@@ -280,7 +255,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
        (packages/uninstall-outdated package)
 
        ;; Upgrade any dependencies needed.
-       (mapc 'packages/-install-or-upgrade-if-needed (package-deps package))
+       (mapc 'packages/install-or-upgrade-if-needed (package-deps package))
 
        ;; Increment package upgrade count.
        (setq packages/upgraded
@@ -304,19 +279,20 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 	     (not (packages/-latest-installed? package)))
     (packages/upgrade package)))
 
-(defun packages/-install-or-upgrade-if-needed (package)
+(defun packages/install-or-upgrade-if-needed (package)
   "Install PACKAGE if it is not already installed, otherwise upgrade PACKAGE if it is outdated."
 
   ;; Interactive prompt.
-  (-> (completing-read "Install or upgrade package: "
-		       (->> package-alist
-			    (append package-archive-contents)
-			    (mapcar 'car)
-			    cl-remove-duplicates)
-		       'identity t)
-      intern-soft
-      list
-      interactive)
+  (interactive (progn
+		 (packages/-refresh-contents-if-not-already)
+		 (-> (completing-read "Install or upgrade package: "
+				      (->> package-alist
+					   (append package-archive-contents)
+					   (mapcar 'car)
+					   cl-remove-duplicates)
+				      'identity t)
+		     intern-soft
+		     list)))
 
   ;; Actually perform the upgrade/install.
   (when (packages/feature-exists package)
@@ -346,7 +322,7 @@ Only run BODY if they could be loaded."
 			nil)
 		    (progn
 		      (packages/-refresh-contents-if-needed)
-		      (packages/-install-or-upgrade-if-needed (quote ,lib))
+		      (packages/install-or-upgrade-if-needed (quote ,lib))
 		      (packages/mark (quote ,lib))
 		      (if ,(string-match ".*-theme" (symbol-name lib))
 			  t

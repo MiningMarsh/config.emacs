@@ -4,7 +4,7 @@
 (require 'rc)
 (require 'packages)
 
-(packages/define mac (os)
+(packages/define mac ()
   (defun mac/lock-account ()
     "Lock the current user account."
     (start-process "Lock Account" "*Lock Account*"

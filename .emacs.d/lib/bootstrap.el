@@ -25,35 +25,35 @@
 (defun bootstrap/-needs-recompile? (path compiled)
   "Check if PATH is latest, or if COMPILED must be regenerated."
   (or (not (file-exists-p compiled))
-       (file-newer-than-file-p path compiled)))
+      (file-newer-than-file-p path compiled)))
 
 (defun bootstrap/-compile-and-load (path compiled &optional load)
   "Compile PATH to COMPILED, and optionally load it if LOAD is set."
   (if (not (bootstrap/-needs-recompile? path compiled))
-    ;; Otherwise, just load the compiled file if requested.
-    (when load (load-file compiled))
+      ;; Otherwise, just load the compiled file if requested.
+      (when load (load-file compiled))
 
-	;; Generate the local compiled path.
-	(let ((local (concat path "c")))
+    ;; Generate the local compiled path.
+    (let ((local (concat path "c")))
 
-	  ;; When the compiled file already exists, remove it to prevent a file
-	  ;; conflict.
-	  (when (file-exists-p local)
-	    (delete-file local))
+      ;; When the compiled file already exists, remove it to prevent a file
+      ;; conflict.
+      (when (file-exists-p local)
+	(delete-file local))
 
-	  ;; Compile the file and load if needed.
-	  (byte-compile-file path load)
+      ;; Compile the file and load if needed.
+      (byte-compile-file path load)
 
-	  ;; If the requested compile path is not the same as the local compiled
-	  ;; path, move the newly generated file to the correct place.
-	  (when (not (string= compiled local))
+      ;; If the requested compile path is not the same as the local compiled
+      ;; path, move the newly generated file to the correct place.
+      (when (not (string= compiled local))
 
-	    ;; Delete the requested file if we are replacing it.
-	    (when (file-exists-p compiled)
-	      (delete-file compiled))
+	;; Delete the requested file if we are replacing it.
+	(when (file-exists-p compiled)
+	  (delete-file compiled))
 
-	    ;; Move the newly compiled file.
-	    (rename-file local compiled)))))
+	;; Move the newly compiled file.
+	(rename-file local compiled)))))
 
 (defun bootstrap/-elisp-file? (path)
   "Check if PATH is an elisp file."
