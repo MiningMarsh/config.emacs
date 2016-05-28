@@ -41,7 +41,7 @@
 (defun bootstrap/-compile-and-load (path compiled &optional load ignore-includes)
   "Compile PATH to COMPILED, and optionally load it if LOAD is set.
 If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
-  (message "Compiling/loading %s to %s" path compiled)
+ ;; (message "Compiling/loading %s to %s" path compiled)
   (if (not (bootstrap/-needs-recompile? path compiled))
       ;; Otherwise, just load the compiled file if requested.
       (when load (load-file compiled))
@@ -82,9 +82,9 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
        (not (file-directory-p path))
        (string-match ".*el$" path)))
 
-(defun bootstrap/-compile-file (path &optional load)
-  "Compile PATH and load it if LOAD is set."
-  (bootstrap/-compile-and-load path (concat path "c") load t))
+(defun bootstrap/-compile-file (path &optional load bootstrap)
+  "Compile PATH and load it if LOAD is set.  Add libraries if not BOOTSTRAP."
+  (bootstrap/-compile-and-load path (concat path "c") load bootstrap))
 
 (defun bootstrap/-concat-message (&rest strs)
   "Helper function used to format the scratch buffer message.  Concats STRS."
@@ -137,7 +137,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
  bootstrap/startup-time
 
  ;; Only recompile the init file if needed.
- (bootstrap/-compile-file "~/.emacs.d/init.el")
+ (bootstrap/-compile-file "~/.emacs.d/init.el" nil t)
 
  ;; Make the compiled cached directory if needed.
  (when (not (file-directory-p "~/.emacs.d/compiled"))
@@ -147,11 +147,13 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
  (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
 
  ;; Setup the library path.
- (bootstrap/-map-dir
-  (lambda (path)
-    (when (file-directory-p path)
-      (add-to-list 'load-path path)))
-  "~/.emacs.d/lib/")
+ (mapc (lambda (path)
+	 (bootstrap/-map-dir
+	  (lambda (path)
+	    (when (file-directory-p path)
+	      (add-to-list 'load-path path)))
+	  (format "~/.emacs.d/%s/" path)))
+       '("lib" "bootstrap"))
 
  ;; Setup the themepath.
  (bootstrap/-map-dir
@@ -160,11 +162,14 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
       (add-to-list 'custom-theme-load-path path)))
   "~/.emacs.d/theme/")
 
- ;; Load the package manager and standard library if we haven't already.
- (require 'rc)
- (require 'packages)
+ ;; Byte compile bootstrap libraries.
+ (bootstrap/-map-dir
+  (lambda (path)
+    (when (bootstrap/-elisp-file? path)
+      (bootstrap/-with-ignored-errors (bootstrap/-compile-file path nil t))))
+  "~/.emacs.d/bootstrap/")
 
- ;; Byte compile everything.
+ ;; Byte compile lib libraries.
  (mapc (lambda (path)
 	 (bootstrap/-map-dir
 	  (lambda (path)
@@ -177,7 +182,8 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
  (bootstrap/-map-dir
   (lambda (path)
     (when (bootstrap/-elisp-file? path)
-      (bootstrap/-with-ignored-errors (bootstrap/-compile-and-cache-file path t))))
+      (bootstrap/-with-ignored-errors
+       (bootstrap/-compile-and-cache-file path t))))
   "~/.emacs.d/config/")
 
  ;; Run post config hooks.
@@ -222,4 +228,6 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
 ;; Signal that init has finished.
 (provide 'bootstrap)
+
+(message "Now the shit is done.")
 ;;; bootstrap.el ends here

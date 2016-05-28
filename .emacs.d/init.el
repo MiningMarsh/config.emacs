@@ -3,4 +3,4 @@
 ;;; Load bootstrap library.
 ;;; Code:
 
-(load-file "~/.emacs.d/lib/bootstrap.el")
+(load-file "~/.emacs.d/bootstrap/bootstrap.el")
