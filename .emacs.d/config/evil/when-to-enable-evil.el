@@ -2,7 +2,6 @@
 ;;; Commentary:
 ;;; Currently enables evil globally.  This needs to be fixed.
 ;;; Code:
-(require 'rc)
 
 (packages/requires (evil evil-leader)
 	   (global-evil-leader-mode 1)

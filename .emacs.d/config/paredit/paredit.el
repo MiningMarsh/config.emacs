@@ -1,8 +1,6 @@
 ;;; paredit -- Enable paredit.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (paredit)
 

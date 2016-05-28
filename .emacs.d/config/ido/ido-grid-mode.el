@@ -1,8 +1,6 @@
 ;;; ido-grid-mode --- Enable ido-grid-mode.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (ido-grid-mode)
 	   (ido-grid-mode 1)

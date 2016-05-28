@@ -1,8 +1,6 @@
 ;;; keybinds --- Leader bindings.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (evil evil-leader org)
 	   (evil-leader/set-key-for-mode 'org-mode

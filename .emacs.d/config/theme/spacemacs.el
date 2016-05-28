@@ -1,8 +1,6 @@
 ;;; spacemacs --- Enable spacemacs theme.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (spacemacs-theme spaceline fancy-battery spaceline-segments spaceline-config)
 	     (setq powerline-default-separator 'contour)

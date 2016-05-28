@@ -1,5 +1,3 @@
-(require 'rc)
-(require 'packages)
 
 (packages/requires (type-break)
   (type-break-mode)

@@ -1,8 +1,6 @@
 ;;; flx-ido --- Enable flx-ido fuzzy matching.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (flx-ido)
 	   (flx-ido-mode 1)

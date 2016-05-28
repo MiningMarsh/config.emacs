@@ -1,8 +1,6 @@
 ;;; yaml --- Enable yaml support.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (yaml-mode)
 	   (add-hooks (yaml-mode-hook)

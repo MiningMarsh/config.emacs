@@ -1,8 +1,6 @@
 ;;; line-numbers --- Enable line numbers.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (relative-line-numbers linum)
 

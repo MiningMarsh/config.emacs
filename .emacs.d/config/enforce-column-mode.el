@@ -1,8 +1,6 @@
 ;;; enforce-column-mode --- Highlight too long lines in source code.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (column-enforce-mode column-marker)
 	   (add-hooks (prog-mode-hook)

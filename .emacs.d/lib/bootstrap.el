@@ -27,11 +27,27 @@
   (or (not (file-exists-p compiled))
       (file-newer-than-file-p path compiled)))
 
-(defun bootstrap/-compile-and-load (path compiled &optional load)
-  "Compile PATH to COMPILED, and optionally load it if LOAD is set."
+(defun bootstrap/-prepend-require (path)
+  "Prepend requires to PATH in a temp file, return the temp file path."
+  (let ((temp-file (make-temp-file "emacs-config-file-")))
+	(delete-file temp-file)
+	(setq temp-file (concat temp-file ".el"))
+    (with-temp-file temp-file
+      (insert-file-contents path)
+      (goto-char (point-min))
+      (insert "(require 'all)\n")
+      temp-file)))
+
+(defun bootstrap/-compile-and-load (path compiled &optional load ignore-includes)
+  "Compile PATH to COMPILED, and optionally load it if LOAD is set.
+If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
   (if (not (bootstrap/-needs-recompile? path compiled))
       ;; Otherwise, just load the compiled file if requested.
       (when load (load-file compiled))
+
+    ;; Prepend the config if needed.
+    (unless ignore-includes
+      (setq path (bootstrap/-prepend-require path)))
 
     ;; Generate the local compiled path.
     (let ((local (concat path "c")))
@@ -53,7 +69,11 @@
 	  (delete-file compiled))
 
 	;; Move the newly compiled file.
-	(rename-file local compiled)))))
+	(rename-file local compiled)))
+
+    ;; Delete the temp file if needed.
+    (unless ignore-includes
+      (delete-file path))))
 
 (defun bootstrap/-elisp-file? (path)
   "Check if PATH is an elisp file."
@@ -63,7 +83,7 @@
 
 (defun bootstrap/-compile-file (path &optional load)
   "Compile PATH and load it if LOAD is set."
-  (bootstrap/-compile-and-load path (concat path "c") load))
+  (bootstrap/-compile-and-load path (concat path "c") load t))
 
 (defun bootstrap/-concat-message (&rest strs)
   "Helper function used to format the scratch buffer message.  Concats STRS."

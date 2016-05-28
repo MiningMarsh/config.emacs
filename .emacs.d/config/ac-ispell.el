@@ -1,9 +1,6 @@
 ;;; ac-ispell --- Enable auto-complete spelling completion.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-(require 'packages)
 
 (packages/requires (auto-complete ac-ispell)
 	   (setq ispell-complete-word-dict (format "%s/.dictionary"

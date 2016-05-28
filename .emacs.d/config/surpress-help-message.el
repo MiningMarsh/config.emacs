@@ -1,8 +1,6 @@
 ;;; surpress-help-message --- Surpress emacs startup help message.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (message-filter)
 	   (message-blacklist

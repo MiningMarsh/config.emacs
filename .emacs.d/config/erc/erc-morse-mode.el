@@ -1,8 +1,6 @@
 ;;; erc-morse-mode --- Add erc-morse mode.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (erc)
 	   (defvar erc-unmorse-string "[morse]"

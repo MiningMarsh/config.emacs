@@ -1,8 +1,6 @@
 ;;; spelling --- Enable ERC spell checking.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (erc auto-complete ac-ispell)
 	   (add-to-list 'erc-modules 'spelling)

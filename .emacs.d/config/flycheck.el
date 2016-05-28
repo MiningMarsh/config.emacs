@@ -1,8 +1,6 @@
 ;;; flycheck --- Flycheck.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (flycheck paredit)
 	   ;; Enable paredit for various modes.

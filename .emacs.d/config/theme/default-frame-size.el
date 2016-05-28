@@ -1,8 +1,6 @@
 ;;; default-frame-size --- Set the default frame size.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (add-hooks (before-make-frame-hook)
 	   (add-to-list 'default-frame-alist '(left   . 0))

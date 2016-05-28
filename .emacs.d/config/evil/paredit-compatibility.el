@@ -1,8 +1,6 @@
 ;;; paredit-compatibility --- Enable evil-paredit-mode when paredit is enabled.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (paredit evil-paredit)
 	   ;; Enable evil compatibility mode.

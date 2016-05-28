@@ -1,7 +1,6 @@
 ;;; enable-evil-globally --- Enable evil on a global scale.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
 
 (packages/requires (evil)
 	   ;; Enable evil mode on startup.

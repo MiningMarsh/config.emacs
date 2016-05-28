@@ -3,8 +3,6 @@
 ;;; This includes global evil keybindings.
 ;;; Code:
 (eval-when-compile (require 'key-tree))
-(require 'rc)
-(require 'packages)
 
 (packages/requires (evil evil-leader key-chord ranger key-tree os mac)
 

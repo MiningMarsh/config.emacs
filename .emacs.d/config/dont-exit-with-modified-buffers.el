@@ -3,7 +3,6 @@
 ;;; This is a dirty hack, make sure to keep the string constants in line with
 ;;; the current version of Emacs.
 ;;; Code:
-(require 'rc)
 
 (defwrap yes-or-no-p (prompt)
   (if (string= prompt "Modified buffers exist; exit anyway? ")

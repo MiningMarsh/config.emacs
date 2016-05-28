@@ -1,8 +1,6 @@
 ;;; display-battery-mode --- Display battery percentage.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (fancy-battery)
 	   (defer-after-init

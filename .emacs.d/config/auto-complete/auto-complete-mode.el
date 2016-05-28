@@ -1,8 +1,6 @@
 ;;; auto-complete-mode --- Enable auto-complete-mode.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (auto-complete yasnippet)
 		   (ac-config-default)

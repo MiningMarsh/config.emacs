@@ -1,8 +1,6 @@
 ;;; which-key --- Enable which-key navigation.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (which-key)
 	   ;; Setup which-key

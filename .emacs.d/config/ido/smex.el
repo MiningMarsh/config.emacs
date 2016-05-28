@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Smex promotes frequently used results in ido.
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (smex)
 	   (smex-initialize)

@@ -1,8 +1,6 @@
 ;;; no-line-numbers --- Disable line numbers in ERC.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (erc)
 	   (add-hooks (erc-mode-hook)

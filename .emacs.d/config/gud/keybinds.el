@@ -1,8 +1,6 @@
 ;;; keybinds --- Leader bindings for debuggers.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (evil evil-leader gud)
 	   (evil-leader/set-key-for-mode 'gud-mode

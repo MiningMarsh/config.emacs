@@ -1,8 +1,6 @@
 ;;; no-line-numbers --- Disable line numbers in ansi-term.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (advice-add
  'ansi-term

@@ -1,8 +1,6 @@
 ;;; ido --- Enable ido everywhere possible.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (ido ido-ubiquitous ido-yes-or-no)
 	   (ido-mode 1)

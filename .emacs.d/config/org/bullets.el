@@ -1,8 +1,6 @@
 ;;; bullets --- Enable pretty bullets in org mode.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (org-bullets)
 

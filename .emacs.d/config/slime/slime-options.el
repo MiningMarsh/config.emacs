@@ -1,8 +1,6 @@
 ;;; slime-options --- Base SLIME option choice.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (packages/requires (slime slime-autoloads)
 	   (slime-setup

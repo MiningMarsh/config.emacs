@@ -2,8 +2,6 @@
 ;;; Commentary:
 ;;; Currently enables abbrev-mode, auto-fill-mode, and font-lock-mode
 ;;; Code:
-(require 'rc)
-(require 'packages)
 
 (add-hooks (octave-mode-hook)
 	   (abbrev-mode 1)

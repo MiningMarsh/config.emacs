@@ -1,9 +1,6 @@
 ;;; keybinds --- Keybindings for C source code.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-(require 'packages)
 
 (require 'key-tree)
 (packages/requires (key-tree function-args)
