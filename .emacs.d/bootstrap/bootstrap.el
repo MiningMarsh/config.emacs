@@ -5,6 +5,7 @@
 ;;; order by name.  Also loads ~/.emacs.d/rc.el before everything else.
 ;;; Code:
 (require 'cl-lib)
+(provide 'bootstrap)
 
 (defvar bootstrap/after-config-hook nil
   "List of hooks to run after config has been read.")
@@ -72,7 +73,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
       ;; Ensure that the temp files are always deleted.
       (bootstrap/-with-finally
        (progn
-	 
+
 	 ;; Compile the file and load if needed.
 	 (byte-compile-file path load)
 
@@ -89,11 +90,9 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
        ;; Delete the temp file if needed.
        (unless ignore-includes
-	 (delete-file path))
-
-       ;; Delete the other file if needed.
-       (when (file-exists-p local)
-	 (delete-file local))))))
+		 (delete-file path)
+	 (when (file-exists-p local)
+	   (delete-file local)))))))
 
 (defun bootstrap/-elisp-file? (path)
   "Check if PATH is an elisp file."
@@ -244,9 +243,4 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 		packages/installed
 		packages/upgraded
 		packages/removed)))
-
-;; Signal that init has finished.
-(provide 'bootstrap)
-
-(message "Now the shit is done.")
 ;;; bootstrap.el ends here

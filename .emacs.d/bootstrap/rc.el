@@ -5,6 +5,7 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'cl)
+(require 'bootstrap)
 
 ;; Turn on lexical binding by default.
 (setq lexical-binding t)
@@ -560,7 +561,7 @@ using COMPARE-FN."
 (defmacro only-once (&rest body)
   "Ensure that BODY is only run once."
   (with-gensyms
-   (once result) 
+   (once result)
    `(unless (boundp (quote ,once))
       (setq ,result (progn ,@body))
       (setq ,once t)
