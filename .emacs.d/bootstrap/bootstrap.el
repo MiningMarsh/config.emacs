@@ -27,11 +27,22 @@
   (or (not (file-exists-p compiled))
       (file-newer-than-file-p path compiled)))
 
+(defmacro bootstrap/-with-finally (fn &rest body)
+  "Ignore errors in the wrapped FN, executing BODY as finally."
+  `(unwind-protect
+       (let (retval)
+	 (condition-case ex
+	     (setq retval (progn ,fn))
+	   ('error
+	    (setq retval nil)))
+	 retval)
+     ,@body))
+
 (defun bootstrap/-prepend-require (path)
   "Prepend requires to PATH in a temp file, return the temp file path."
   (let ((temp-file (make-temp-file "emacs-config-file-")))
-	(delete-file temp-file)
-	(setq temp-file (concat temp-file ".el"))
+    (delete-file temp-file)
+    (setq temp-file (concat temp-file ".el"))
     (with-temp-file temp-file
       (insert-file-contents path)
       (goto-char (point-min))
@@ -41,7 +52,7 @@
 (defun bootstrap/-compile-and-load (path compiled &optional load ignore-includes)
   "Compile PATH to COMPILED, and optionally load it if LOAD is set.
 If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
- ;; (message "Compiling/loading %s to %s" path compiled)
+  ;; (message "Compiling/loading %s to %s" path compiled)
   (if (not (bootstrap/-needs-recompile? path compiled))
       ;; Otherwise, just load the compiled file if requested.
       (when load (load-file compiled))
@@ -58,23 +69,31 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
       (when (file-exists-p local)
 	(delete-file local))
 
-      ;; Compile the file and load if needed.
-      (byte-compile-file path load)
+      ;; Ensure that the temp files are always deleted.
+      (bootstrap/-with-finally
+       (progn
+	 
+	 ;; Compile the file and load if needed.
+	 (byte-compile-file path load)
 
-      ;; If the requested compile path is not the same as the local compiled
-      ;; path, move the newly generated file to the correct place.
-      (when (not (string= compiled local))
+	 ;; If the requested compile path is not the same as the local compiled
+	 ;; path, move the newly generated file to the correct place.
+	 (when (not (string= compiled local))
 
-	;; Delete the requested file if we are replacing it.
-	(when (file-exists-p compiled)
-	  (delete-file compiled))
+	   ;; Delete the requested file if we are replacing it.
+	   (when (file-exists-p compiled)
+	     (delete-file compiled))
 
-	;; Move the newly compiled file.
-	(rename-file local compiled)))
+	   ;; Move the newly compiled file.
+	   (rename-file local compiled)))
 
-    ;; Delete the temp file if needed.
-    (unless ignore-includes
-      (delete-file path))))
+       ;; Delete the temp file if needed.
+       (unless ignore-includes
+	 (delete-file path))
+
+       ;; Delete the other file if needed.
+       (when (file-exists-p local)
+	 (delete-file local))))))
 
 (defun bootstrap/-elisp-file? (path)
   "Check if PATH is an elisp file."
