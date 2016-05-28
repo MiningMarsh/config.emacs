@@ -3,6 +3,7 @@
 !.emacs.d/config
 !.emacs.d/lib
 !.emacs.d/bootstrap
+!.emacs.d/bootstrap/*
 !.emacs.d/theme
 !.emacs.d/config/*
 !.emacs.d/lib/*
