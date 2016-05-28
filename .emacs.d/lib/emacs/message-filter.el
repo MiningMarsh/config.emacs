@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; This package can be used to rewrite or surpress Emacs messages.
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (packages/define message-filter ()
 
   (defvar message-filters '()

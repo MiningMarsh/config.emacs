@@ -1,10 +1,6 @@
 ;;; key-tree --- Key tree subsystem.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-(require 'packages)
-
 (packages/define key-tree (evil evil-leader which-key)
 
   ;; Key for global vim binds.

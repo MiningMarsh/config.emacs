@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Stolen from emacs-wiki.
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (packages/define erc-nick-colors (erc)
 	   ;; Pool of colors to use when coloring IRC nicks.
 	   (defvar erc-nick-colors-list

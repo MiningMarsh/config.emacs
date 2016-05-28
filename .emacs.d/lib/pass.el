@@ -1,9 +1,6 @@
 ;;; pass --- Add `pass` support.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (setq lexical-binding t)
 
 (packages/define pass (password-store)

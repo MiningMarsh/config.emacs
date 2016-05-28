@@ -2,9 +2,6 @@
 ;;; Commentary:
 ;;; Used for greentext, mostly.
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (packages/define erc-input-hooks (erc)
 
   (defvar erc-input-hooks-alist '()

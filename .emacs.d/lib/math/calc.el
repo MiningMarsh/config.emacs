@@ -1,9 +1,6 @@
 ;;; calc --- Calculus commands.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (packages/define calc ()
 
   (defun resize-vector (size vector)

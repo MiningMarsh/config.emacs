@@ -1,9 +1,6 @@
 ;;; os --- Operating System Library.
 ;;; Commentary:
 ;;; Code:
-(require 'rc)
-(require 'packages)
-
 (packages/define os ()
 
   (defvar os/mac :mac
