@@ -18,7 +18,7 @@
 		       F "File Manager" 'deer
 		       c "Change Directory" 'cd)
 
-		    v ("Buffer"
+		    b ("Buffer"
 		       s ("Switch Buffer"
 			  f "Find Buffer" 'switch-to-buffer
 			  m "Switch to *Messages*" (interactively
@@ -34,7 +34,8 @@
 						       (switch-to-buffer
 							"*Compile-Log*")))
 		       k ("Kill Buffer"
-			  c "Kill Current Buffer" 'kill-this-buffer))
+			  c "Kill Current Buffer" 'kill-this-buffer
+			  f "Find and Kill Buffer" 'ido-kill-buffer))
 		    w ("Window"
 		       S ("Split Window"
 			  "h" "Split Window Horizontally" 'split-window-below

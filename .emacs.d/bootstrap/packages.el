@@ -46,22 +46,22 @@
   ;; a day.
   (when (or
 
-       ;;First check if we ever refreshed.
-       (not (-> "last-updated"
-		config-file
-		file-exists-p))
+	 ;;First check if we ever refreshed.
+	 (not (-> "last-updated"
+		  config-file
+		  file-exists-p))
 
-       ;; Second, check if the last update time was more than a day ago.
-       (not (=  (-> (decode-time)
-		    cl-fourth)
-		(-> "last-updated"
-		    config-file
-		    read-file-last
-		    cl-fourth))))
+	 ;; Second, check if the last update time was more than a day ago.
+	 (not (=  (-> (decode-time)
+		      cl-fourth)
+		  (-> "last-updated"
+		      config-file
+		      read-file-last
+		      cl-fourth))))
 
-      ;; Refresh the package contents database.
-      (with-temp-message "Refreshing package contents database..."
-	(package-refresh-contents))))
+    ;; Refresh the package contents database.
+    (with-temp-message "Refreshing package contents database..."
+      (package-refresh-contents))))
 
 (defun packages/-find-feature-path (feature)
   "Return a file path if FEATURE could be found in the 'load-path'."
@@ -138,7 +138,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 (defun packages/-description (package)
   "Return the latest package description available for PACKAGE."
   (packages/-bind-descriptions (local remote) package
-			     (or remote local)))
+			       (or remote local)))
 
 (defun packages/-latest-installed? (package)
   "Return whether the installed version of PACKAGE is up to date."
@@ -255,7 +255,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
        (packages/uninstall-outdated package)
 
        ;; Upgrade any dependencies needed.
-       (mapc 'packages/install-or-upgrade-if-needed (package-deps package))
+       (mapc 'packages/install-or-upgrade-if-needed (packages/dependencies package))
 
        ;; Increment package upgrade count.
        (setq packages/upgraded
@@ -271,7 +271,10 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
   "Return whether FEATURE exists either remotely or locally."
   (or (packages/-find-feature-path feature)
       (packages/-description-local feature)
-      (packages/-description-remote feature)))
+      (progn
+	(unless (packages/-description-remote feature)
+	  (packages/-refresh-contents-if-not-already))
+	(packages/-description-remote feature))))
 
 (defun packages/-upgrade-if-needed (package)
   "Upgrade PACKAGE if not already upgraded."
@@ -283,26 +286,27 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
   "Install PACKAGE if it is not already installed, otherwise upgrade PACKAGE if it is outdated."
 
   ;; Interactive prompt.
-  (interactive (progn
-		 (packages/-refresh-contents-if-not-already)
-		 (-> (completing-read "Install or upgrade package: "
-				      (->> package-alist
-					   (append package-archive-contents)
-					   (mapcar 'car)
-					   cl-remove-duplicates)
-				      'identity t)
-		     intern-soft
-		     list)))
+  (interactive
+   (progn
+     (packages/-refresh-contents-if-not-already)
+     (-> (completing-read "Install or upgrade package: "
+			  (->> package-alist
+			       (append package-archive-contents)
+			       (mapcar 'car)
+			       cl-remove-duplicates)
+			  'identity t)
+	 intern-soft
+	 list)))
 
   ;; Actually perform the upgrade/install.
   (when (packages/feature-exists package)
-    (if (and (packages/-description-remote package)
-	     (not (package-installed-p package)))
-	(progn
-	  (setq packages/installed
-		(1+ packages/installed))
-	  (package-install package))
-      (packages/-upgrade-if-needed package))))
+    (if (not (and (not (package-installed-p package))
+		  (packages/-description-remote package)))
+	(packages/-upgrade-if-needed package)
+      (setq packages/installed
+	    (1+ packages/installed))
+      (package-refresh-contents)
+      (package-install package))))
 
 (defmacro packages/requires (libs &rest body)
   "Let you require multiple LIBS things without quoting them.
@@ -314,27 +318,25 @@ Only run BODY if they could be loaded."
 
 		  ;; If the package is not available remotely or locally, spit
 		  ;; an error message.
-		  (if (not (or (packages/feature-exists (quote ,lib))
-			       (packages/-refresh-contents-if-not-already)
-			       (packages/feature-exists (quote ,lib))))
+		  (if (not (packages/feature-exists (quote ,lib)))
 		      (progn
-			(message "Could not install package/load feature '%s'" (quote ,lib))
+			(message "Could not install package/load feature '%s'"
+				 (quote ,lib))
 			nil)
-		    (progn
-		      (packages/-refresh-contents-if-needed)
-		      (packages/install-or-upgrade-if-needed (quote ,lib))
-		      (packages/mark (quote ,lib))
-		      (if ,(string-match ".*-theme" (symbol-name lib))
-			  t
-			(require (quote ,lib) nil 'noerror))))))
+		    (packages/-refresh-contents-if-needed)
+		    (packages/install-or-upgrade-if-needed (quote ,lib))
+		    (packages/mark (quote ,lib))
+		    (if ,(string-match ".*-theme" (symbol-name lib))
+			t
+		      (require (quote ,lib) nil 'noerror)))))
 	     libs))
      ,@body))
 
 (defmacro packages/define (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
   `(packages/requires ,deps
-	      ,@body
-	      (provides ,feature-name)))
+		      ,@body
+		      (provides ,feature-name)))
 
 (provides packages)
 ;;; packages.el ends here
