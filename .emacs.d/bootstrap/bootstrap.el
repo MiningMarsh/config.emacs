@@ -90,7 +90,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
        ;; Delete the temp file if needed.
        (unless ignore-includes
-		 (delete-file path)
+	 (delete-file path)
 	 (when (file-exists-p local)
 	   (delete-file local)))))))
 
@@ -225,17 +225,17 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 	(remove-duplicates
 	 (mapcar 'car (append package-alist package--builtins))))))
   (setq initial-scratch-message
-	(format (bootstrap/-concat-message ";;; This buffer is for quick Emacs Lisp code."
-					   ";;;"
-					   ";;; Startup took %f seconds."
-					   ";;;"
-					   ";;; There are %d packages installed."
-					   ";;; ➡ There are %d builtin packages installed."
-					   ";;; ➡ There are %d user-requested packages installed."
-					   ";;; ➡ %d packages were added on startup."
-					   ";;; ➡ %d packages were upgraded on startup."
-					   ";;; ➡ %d packages were removed on startup."
-					   )
+	(format (bootstrap/-concat-message
+		 ";;; This buffer is for quick Emacs Lisp code."
+		 ";;;"
+		 ";;; Startup took %f seconds."
+		 ";;;"
+		 ";;; There are %d packages installed."
+		 ";;; ➡ There are %d builtin packages installed."
+		 ";;; ➡ There are %d user-requested packages installed."
+		 ";;; ➡ %d packages were added on startup."
+		 ";;; ➡ %d packages were upgraded on startup."
+		 ";;; ➡ %d packages were removed on startup.")
 		bootstrap/startup-time
 		combinedp
 		systemp
