@@ -44,7 +44,7 @@
 			 "s" ("Switch Window"
 			      "c" "Cycle Window" 'other-window))
 
-		    "p" ("Process"
+		    "P" ("Process"
 			 "l" ("Launch Process"
 			      "f" "Launch Firefox" (interactively (launch-program "firefox"))
 			      "l" "Launch Libreoffice" (interactively (launch-program "libreoffice"))

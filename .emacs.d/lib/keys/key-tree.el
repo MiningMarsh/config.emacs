@@ -28,6 +28,11 @@
 			 (value (cl-second tree))
 			 (new-tree (cddr tree)))
 		    (setq tree new-tree)
+		    (when (symbolp key)
+		      (setq key (symbol-name key)))
+
+		    (when (symbolp value)
+		      (setq value (symbol-name value)))
 
 		    ;; If we are dealing with a subtree, recurse.
 		    (if (and (not (stringp value))
@@ -37,6 +42,8 @@
 			(let* ((description (first value))
 			       (new-value (cdr value)))
 			  (setq value new-value)
+			  (when (symbolp description)
+			    (setq description (symbol-name description)))
 
 			  ;; Add the key-description for the current subtree.
 			  (setq result
