@@ -16,7 +16,7 @@
 (package-initialize)
 
 (defvar packages/finished nil
-  "Whether package-finish has yet been called.")
+  "Whether `package-finish' has yet been called.")
 
 (defvar packages/installed 0
   "The number of packages installed on startup.")
@@ -27,14 +27,22 @@
 (defvar packages/removed 0
   "The number of packages that were removed on startup.")
 
+(defvar packages/-already-refreshed nil
+  "Whether `package-refresh-contents' has been called.")
+
 (defun packages/-refresh-contents-if-not-already ()
   "Refresh package database if not already refreshed."
-  (only-once (package-refresh-contents)))
+  (unless packages/-already-refreshed
+    (package-refresh-contents)))
 
 ;; Hook that updates a cache timestamp after updates.
 (advice-add 'package-refresh-contents
 	    :after
 	    (lambda (&rest args)
+
+	      ;; Signal that we refreshed.
+	      (setq packages/-already-refreshed t)
+
 	      ;; Print a timestamp to the cache file.
 	      (to-file (config-file "last-updated")
 		       (decode-time))))
@@ -305,7 +313,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 	(packages/-upgrade-if-needed package)
       (setq packages/installed
 	    (1+ packages/installed))
-      (package-refresh-contents)
+      (packages/-refresh-contents-if-not-already)
       (package-install package))))
 
 (defmacro packages/requires (libs &rest body)
