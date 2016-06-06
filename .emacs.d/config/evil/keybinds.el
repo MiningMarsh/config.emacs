@@ -36,6 +36,7 @@
 		       k ("Kill Buffer"
 			  c "Kill Current Buffer" 'kill-this-buffer
 			  f "Find and Kill Buffer" 'ido-kill-buffer))
+
 		    w ("Window"
 		       S ("Split Window"
 			  "h" "Split Window Horizontally" 'split-window-below
@@ -48,9 +49,36 @@
 
 		    P ("Process"
 		       l ("Launch Process"
-			  f "Launch Firefox" (interactively (launch-program "firefox"))
-			  l "Launch Libreoffice" (interactively (launch-program "libreoffice"))
-			  e "Launch ERC" 'erc-tls)))
+			  f "Launch Firefox" (interactively
+					      (launch-program "firefox"))
+			  l "Launch Libreoffice" (interactively
+						  (launch-program
+						   "libreoffice"))
+			  e "Launch ERC" 'erc-tls))
+
+		    h ("Help"
+		       K "Verbose Key Sequence Binding" 'describe-key
+		       f "Function" 'describe-function
+		       k "Key Sequence Binding" 'describe-key-briefly
+		       m "Mode" 'describe-mode
+		       p "Position" 'describe-char
+		       v "Variable" 'describe-variable)
+
+		    F ("Feature"
+		       i "Install" 'package-install
+		       u "Upgrade" 'packages/upgrade
+		       I "Install and Upgrade" 'packages/install-or-upgrade-if-needed
+		       r "Remove" 'packages/uninstall
+		       R "Remove Outdated Versions" 'packages/uninstall-outdated
+		       l "Load" (lambda (package)
+				  (-> (completing-read "Load Feature: "
+						       features
+						       (lambda (&rest args) t)
+						       t)
+				      intern-soft
+				      list
+				      interactive)
+				  (require package))))
 
 		   (os/when-mac
 		    (key-tree/add-bindings
