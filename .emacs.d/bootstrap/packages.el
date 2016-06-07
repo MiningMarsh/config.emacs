@@ -15,8 +15,8 @@
 ;; Init package subsystem.
 (package-initialize)
 
-(defvar packages/finished nil
-  "Whether `package-finish' has yet been called.")
+(defvar packages/-finished nil
+  "Whether the finish hook has yet been called.")
 
 (defvar packages/installed 0
   "The number of packages installed on startup.")
@@ -77,7 +77,7 @@
       symbol-name
       locate-library))
 
-(cl-defun packages/dependencies (orig-package &optional list-package list-builtins)
+(cl-defun packages/-dependencies (orig-package &optional list-package list-builtins)
   "Returns a list of packages that PACKAGE depends on, including their dependencies.
 If LIST-PACKAGE is non-nil, include the package in the results.
 If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
@@ -105,13 +105,13 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 (defvar packages/-marked nil
   "List of packages the user has marked.")
 
-(defun packages/mark (package)
+(defun packages/-mark (package)
   "Mark PACKAGE as being requested to be installed by the user."
   (setq packages/-marked
 	(cl-remove-duplicates
 	 (append
 	  packages/-marked
-	  (packages/dependencies package t)))))
+	  (packages/-dependencies package t)))))
 
 (defun packages/-uninstall-all-unmarked ()
   "Uninstall all unneeded packages."
@@ -124,7 +124,11 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 	 (mapcar 'car package-alist))))
 
 (add-hook 'after-config-hook
-	  'packages/-uninstall-all-unmarked)
+	  (lambda ()
+	    (unless packages/-finished
+	      (packages/-uninstall-all-unmarked)
+	      (packages/-uninstall-all-outdated)
+	      (setq packages/-finished t))))
 
 (defun packages/-description-remote (package)
   "Return the description of PACKAGE if it is available remotely, nil otherwise."
@@ -169,7 +173,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
        (or (version-list-= package-version-remote package-version-local)
 	   (version-list-< package-version-remote package-version-local))))))
 
-(defun pn/uninstall-all-outdated ()
+(defun packages/-uninstall-all-outdated ()
   "Delete all outdated packages."
   (->> package-alist
        ;; Retrieves outdated packages.
@@ -333,7 +337,7 @@ Only run BODY if they could be loaded."
 			nil)
 		    (packages/-refresh-contents-if-needed)
 		    (packages/install-or-upgrade-if-needed (quote ,lib))
-		    (packages/mark (quote ,lib))
+		    (packages/-mark (quote ,lib))
 		    (if ,(string-match ".*-theme" (symbol-name lib))
 			t
 		      (require (quote ,lib) nil 'noerror)))))
