@@ -209,14 +209,24 @@
       ;; Return the resultant accumulator.
       acc)))
 
+(defun replace-when-nil (value replacement)
+  "Return VALUE when VALUE, and return REPLACEMENT otherwise."
+  (if value
+      value
+    replcement))
+
 (defmacro add-hooks (hook-names &rest hooks)
-  "Add HOOKS to the specified HOOK-NAMES."
+  "Add to the specified HOOK-NAMES the specified HOOKS."
   (locals
 
    (deflocal generate-add-hook (hook-name hook)
      "Generates an add-hook expression."
      `(add-hook
-       (quote ,hook-name)
+       (quote ,(-> hook-name
+		   symbol-name
+		   (concat "-hook")
+		   intern-soft
+		   (replace-when-nil hook-name)))
        ,(if (listp hook)
 	    `(lambda () ,hook)
 	  `(lambda () (,hook)))
@@ -506,8 +516,8 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
       car))
 
 (defun config-file (filename)
-  "Return the cconfig filename for FILENAME."
-  (format "%s/.emacs.d/%s"
+  "Generate a persistent FILENAME that can be used to store configuration data."
+  (format "%s/.emacs.d/persistent/%s"
 	  (getenv "HOME")
 	  filename))
 

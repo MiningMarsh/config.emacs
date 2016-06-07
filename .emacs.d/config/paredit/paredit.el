@@ -1,15 +1,14 @@
 ;;; paredit -- Enable paredit.
 ;;; Commentary:
 ;;; Code:
-
 (packages/requires (paredit)
 
-	   ;; Enable paredir for various modes.
-	   (add-hooks (emacs-lisp-mode-hook
-		       eval-expression-minibuffer-setup-hook
-		       ielm-mode-hook
-		       lisp-mode-hook
-		       lisp-interactive-mode-hook
-		       scheme-mode-hook)
-		      paredit-mode))
+		   ;; Enable paredir for various modes.
+		   (add-hooks (emacs-lisp-mode
+			       eval-expression-minibuffer-setup
+			       ielm-mode
+			       lisp-mode
+			       lisp-interactive-mode
+			       scheme-mode)
+			      paredit-mode))
 ;;; paredit.el ends here

@@ -2,8 +2,7 @@
 ;;; Commentary:
 ;;; Currently enables abbrev-mode, auto-fill-mode, and font-lock-mode
 ;;; Code:
-
-(add-hooks (octave-mode-hook)
+(add-hooks (octave-mode)
 	   (abbrev-mode 1)
 	   (auto-fill-mode 1)
 	   (if (eq window-system 'x)

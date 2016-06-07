@@ -4,12 +4,12 @@
 
 (packages/requires (relative-line-numbers linum)
 
-	   (add-hooks (evil-motion-state-entry-hook
-		       evil-operator-state-entry-hook)
+	   (add-hooks (evil-motion-state-entry
+		       evil-operator-state-entry)
 		      (linum-mode 0)
 		      (relative-line-numbers-mode 1))
-	   (add-hooks (evil-motion-state-exit-hook
-		       evil-operator-state-exit-hook)
+	   (add-hooks (evil-motion-state-exit
+		       evil-operator-state-exit)
 		      (linum-mode 1)
 		      (relative-line-numbers-mode -1))
 

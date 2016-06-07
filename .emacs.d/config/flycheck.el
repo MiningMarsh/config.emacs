@@ -4,12 +4,12 @@
 
 (packages/requires (flycheck paredit)
 	   ;; Enable paredit for various modes.
-	   (add-hooks (emacs-lisp-mode-hook
-		       eval-expression-minibuffer-setup-hook
-		       ielm-mode-hook
-		       lisp-mode-hook
-		       lisp-interactive-mode-hook
-		       scheme-mode-hook)
+	   (add-hooks (emacs-lisp-mode
+		       eval-expression-minibuffer-setup
+		       ielm-mode
+		       lisp-mode
+		       lisp-interactive-mode
+		       scheme-mode)
 		      (unless (string= (buffer-name) "*scratch*")
 			(flycheck-mode 1))))
 ;;; flycheck.el ends here

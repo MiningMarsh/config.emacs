@@ -2,7 +2,7 @@
 ;;; Commentary:
 ;;; Code:
 
-(add-hooks (before-make-frame-hook)
+(add-hooks (before-make-frame)
 	   (add-to-list 'default-frame-alist '(left   . 0))
 	   (add-to-list 'default-frame-alist '(top    . 0))
 	   (add-to-list 'default-frame-alist '(height . 70))

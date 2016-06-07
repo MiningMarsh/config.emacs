@@ -157,12 +157,24 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
  ;; Only recompile the init file if needed.
  (bootstrap/-compile-file "~/.emacs.d/init.el" nil t)
 
- ;; Make the compiled cached directory if needed.
- (when (not (file-directory-p "~/.emacs.d/compiled"))
-   (make-directory "~/.emacs.d/compiled"))
+ ;; Make needed directories.
+ (mapc (lambda (path)
+	 (setq path (format "~/.emacs.d/%s" path))
+	 (when (not (file-directory-p path))
+	   (make-directory path)))
+       '("compiled"
+	 "lib"
+	 "persistent"
+	 "config"))
 
  ;; Distro specific emacs library code.
  (add-to-list 'load-path "/usr/share/emacs/site-lisp/")
+
+;; Make sure we only have one window.
+(delete-other-windows)
+
+;; Switch to messages buffer.
+(switch-to-buffer "*Messages*")
 
  ;; Setup the library path.
  (mapc (lambda (path)

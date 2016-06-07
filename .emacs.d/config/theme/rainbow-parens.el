@@ -3,6 +3,6 @@
 ;;; Code:
 
 (packages/requires (rainbow-delimiters)
-	   (add-hooks (prog-mode-hook)
+	   (add-hooks (prog-mode)
 		      rainbow-delimiters-mode))
 ;;; rainbow-parens.el ends here
