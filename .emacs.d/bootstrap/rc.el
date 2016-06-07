@@ -213,7 +213,7 @@
   "Return VALUE when VALUE, and return REPLACEMENT otherwise."
   (if value
       value
-    replcement))
+    replacement))
 
 (defmacro add-hooks (hook-names &rest hooks)
   "Add to the specified HOOK-NAMES the specified HOOKS."
