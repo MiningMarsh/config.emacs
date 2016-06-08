@@ -343,12 +343,15 @@ Only run BODY if they could be loaded."
 		      (require (quote ,lib) nil 'noerror)))))
 	     libs))
      ,@body))
+(put 'packages/requires 'lisp-indent-function 'defun)
 
 (defmacro packages/define (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
   `(packages/requires ,deps
 		      ,@body
 		      (provides ,feature-name)))
+(put 'packages/define 'lisp-indent-function 'defun)
+
 
 (provides packages)
 ;;; packages.el ends here
