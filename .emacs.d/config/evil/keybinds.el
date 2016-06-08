@@ -13,6 +13,11 @@
 		      key))
 
 		   (key-tree/add-bindings
+		    e ("Emacs"
+		       c "Run Command" 'smex
+		       b "Bind Symbol" 'bind-symbol
+		       s "Get Symbol" 'retrieve-symbol)
+
 		    f ("File"
 		       f "Find File" 'find-file
 		       F "File Manager" 'deer

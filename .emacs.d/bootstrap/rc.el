@@ -568,6 +568,11 @@ using COMPARE-FN."
       (setq ,var t)
       ,result)))
 
+(defmacro guarded (fn &rest args)
+  "Call FN with ARGS only if FN is bound."
+  `(if (boundp (quote ,fn))
+       (,fn ,@args)))
+
 (defmacro only-once (&rest body)
   "Ensure that BODY is only run once."
   (with-gensyms
