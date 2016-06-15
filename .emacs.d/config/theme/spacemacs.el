@@ -36,5 +36,5 @@
 		     (add-hook 'after-make-frame-functions
 			       (lambda (frame)
 				 (with-selected-frame frame
-				   (load-theme 'spacemacs-dark t))))))
+				   (load-theme 'solarized t))))))
 ;;; spacemacs.el ends here
