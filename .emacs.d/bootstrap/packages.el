@@ -352,6 +352,5 @@ Only run BODY if they could be loaded."
 		      (provides ,feature-name)))
 (put 'packages/define 'lisp-indent-function 1)
 
-
 (provides packages)
 ;;; packages.el ends here
