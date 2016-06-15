@@ -8,9 +8,9 @@
 ;; Add package repositories.
 (mapc (lambda (e) (add-to-list 'package-archives e))
       (assoc-map "melpa-stable" "http://melpa-stable.milkbox.net/packages/"
-		 "marmalade" "http://marmalade-repo.org/packages/"
-		 "gnu"       "http://elpa.gnu.org/packages/"
-		 "melpa"     "http://melpa.milkbox.net/packages/"))
+		 "marmalade"    "http://marmalade-repo.org/packages/"
+		 "gnu"          "http://elpa.gnu.org/packages/"
+		 "melpa"        "http://melpa.milkbox.net/packages/"))
 
 ;; Init package subsystem.
 (package-initialize)
