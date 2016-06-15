@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (pinentry)
-	   (pinentry-start))
+		   (pinentry-start))
 ;;; pinentry.el ends here

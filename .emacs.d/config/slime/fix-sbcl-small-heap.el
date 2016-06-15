@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (slime slime-autoloads)
-	   (setq inferior-lisp-program "sbcl --dynamic-space-size 4096"))
+		   (setq inferior-lisp-program "sbcl --dynamic-space-size 4096"))
 ;;; fix-sbcl-small-heap.el ends here

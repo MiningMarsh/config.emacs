@@ -3,6 +3,6 @@
 ;;; Code:
 
 (packages/requires (message-filter)
-	   (message-blacklist
-	    "For information about GNU Emacs and the GNU system, type C-h C-a\."))
+		   (message-blacklist
+		    "For information about GNU Emacs and the GNU system, type C-h C-a\."))
 ;;; surpress-help-message.el ends here

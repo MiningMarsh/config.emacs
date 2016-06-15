@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (erc)
-	   (add-to-list 'erc-modules 'netsplit))
+		   (add-to-list 'erc-modules 'netsplit))
 ;;; netsplit.el ends here

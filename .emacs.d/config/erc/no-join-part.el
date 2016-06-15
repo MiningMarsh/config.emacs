@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (erc)
-	   (setq erc-hide-list '("JOIN" "PART" "QUIT")))
+		   (setq erc-hide-list '("JOIN" "PART" "QUIT")))
 ;;; no-join-part.el ends here

@@ -6,9 +6,9 @@
 (packages/requires (key-tree function-args)
 
 		   (key-tree/add-mode-bindings
-			c-mode
+		    c-mode
 
-			"c" ("C Code"
-				 "n" ("Navigation"
-					  "j" "Jump" 'moo-jump-local))))
+		    "c" ("C Code"
+			 "n" ("Navigation"
+			      "j" "Jump" 'moo-jump-local))))
 ;;; keybinds.el ends here

@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (erc)
-	   (add-to-list 'erc-modules 'move-to-prompt))
+		   (add-to-list 'erc-modules 'move-to-prompt))
 ;;; move-to-prompt.el ends here

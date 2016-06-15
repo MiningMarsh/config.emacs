@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (erc)
-	   (add-to-list 'erc-modules 'ring))
+		   (add-to-list 'erc-modules 'ring))
 ;;; ring.el ends here

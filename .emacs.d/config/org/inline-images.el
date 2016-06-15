@@ -3,5 +3,5 @@
 ;;; Code:
 
 (packages/requires (org)
-	   (setq org-startup-with-inline-images t))
+		   (setq org-startup-with-inline-images t))
 ;;; inline-images.el ends here

@@ -116,11 +116,11 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 (defun packages/-uninstall-all-unmarked ()
   "Uninstall all unneeded packages."
   (mapc (lambda (p)
-	  (package-uninstall p)
+	  (packages/uninstall p)
 	  (setq packages/removed
 		(1+ packages/removed)))
 	(cl-remove-if
-	 (lambda (p) (member p package-marked-list))
+	 (lambda (p) (member p packages/-marked))
 	 (mapcar 'car package-alist))))
 
 (add-hook 'after-config-hook
@@ -267,7 +267,7 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
        (packages/uninstall-outdated package)
 
        ;; Upgrade any dependencies needed.
-       (mapc 'packages/install-or-upgrade-if-needed (packages/dependencies package))
+       (mapc 'packages/install-or-upgrade-if-needed (packages/-dependencies package))
 
        ;; Increment package upgrade count.
        (setq packages/upgraded
@@ -343,14 +343,14 @@ Only run BODY if they could be loaded."
 		      (require (quote ,lib) nil 'noerror)))))
 	     libs))
      ,@body))
-(put 'packages/requires 'lisp-indent-function 'defun)
+(put 'packages/requires 'lisp-indent-function 1)
 
 (defmacro packages/define (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
   `(packages/requires ,deps
 		      ,@body
 		      (provides ,feature-name)))
-(put 'packages/define 'lisp-indent-function 'defun)
+(put 'packages/define 'lisp-indent-function 1)
 
 
 (provides packages)

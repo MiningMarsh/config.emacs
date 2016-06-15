@@ -6,6 +6,8 @@
 		    fancy-battery
 		    spaceline-segments
 		    spaceline-config
+		    solarized-theme
+		    color-theme-solarized
 		    os)
 
 		   ;; This needs to be set before the theme is loaded for things
@@ -16,7 +18,7 @@
 		   (os/when-mac
 		    (setq powerline-default-separator nil))
 
-		   (load-theme 'spacemacs-dark t)
+		   (load-theme 'solarized t)
 		   (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
 			 spaceline-workspace-numbers-unicode t
 			 spaceline-window-numbers-unicode t)
