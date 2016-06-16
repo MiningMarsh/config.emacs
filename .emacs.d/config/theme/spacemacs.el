@@ -36,5 +36,5 @@
 	    (lambda (frame)
 	      (set-frame-parameter frame 'background-mode 'dark)
 	      (set-terminal-parameter frame 'background-mode 'dark)
-	      (enable-theme 'solarized))))
+	      (load-theme 'solarized t))))
 ;;; spacemacs.el ends here
