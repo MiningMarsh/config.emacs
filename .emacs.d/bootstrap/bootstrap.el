@@ -104,7 +104,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
   "Compile PATH and load it if LOAD is set.  Add libraries if not BOOTSTRAP."
   (bootstrap/-compile-and-load path (concat path "c") load bootstrap))
 
-(defun bootstrap/-concat-message (&rest strs)
+(defmacro bootstrap/-concat-message (&rest strs)
   "Helper function used to format the scratch buffer message.  Concats STRS."
   (concat (cl-reduce (lambda (l r) (concat l "\n" r)) strs)
 	  "\n"))

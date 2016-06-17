@@ -570,7 +570,7 @@ using COMPARE-FN."
 
 (defmacro guarded (fn &rest args)
   "Call FN with ARGS only if FN is bound."
-  `(if (boundp (quote ,fn))
+  `(if (or (boundp (quote ,fn)) (fboundp (quote ,fn)))
        (,fn ,@args)))
 
 (defmacro only-once (&rest body)
