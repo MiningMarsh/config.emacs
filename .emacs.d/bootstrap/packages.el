@@ -6,11 +6,11 @@
 (requires cl cl-lib package)
 
 ;; Add package repositories.
-(mapc (lambda (e) (add-to-list 'package-archives e))
-      (assoc-map "melpa-stable" "http://melpa-stable.milkbox.net/packages/"
-		 "marmalade"    "http://marmalade-repo.org/packages/"
-		 "gnu"          "http://elpa.gnu.org/packages/"
-		 "melpa"        "http://melpa.milkbox.net/packages/"))
+(setq package-archives
+      (assoc-map "melpa-stable" "https://stable.melpa.org/packages/"
+		 "marmalade"    "https://marmalade-repo.org/packages/"
+		 "gnu"          "https://elpa.gnu.org/packages/"
+		 "melpa"        "https://melpa.org/packages/"))
 
 ;; Init package subsystem.
 (package-initialize)
@@ -215,13 +215,14 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 
 (defun packages/uninstall (package &optional interactive)
   "Uninstalls all versions of PACKAGE that are installed.  Print output when INTERACTIVE is non-nil."
-  (interactive (list
-		(intern-soft
-		 (completing-read "Uninstall package: "
-				  (mapcar 'car package-alist)
-				  'identity
-				  t))
-		t))
+  (interactive
+   (list
+    (intern-soft
+     (completing-read "Uninstall package: "
+		      (mapcar 'car package-alist)
+		      'identity
+		      t))
+    t))
 
   (if (not package)
       (when interactive
@@ -236,16 +237,17 @@ If LIST-BUILTINS is non-nil, include emacs builtin packages in the results."
 
 (defun packages/upgrade (package &optional interactive)
   "Install the newest version of PACKAGE, uninstalling the old version.  Print output when INTERACTIVE is non-nil."
-  (interactive (list
-		(intern-soft
-		 (when-let packages (->> package-alist
-					 (mapcar 'car)
-					 (cl-remove-if 'packages/-latest-installed?))
-			   (completing-read "Upgrade package: "
-					    packages
-					    'identity
-					    t)))
-		t))
+  (interactive
+   (list
+    (intern-soft
+     (when-let packages (->> package-alist
+			     (mapcar 'car)
+			     (cl-remove-if 'packages/-latest-installed?))
+	       (completing-read "Upgrade package: "
+				packages
+				'identity
+				t)))
+    t))
 
   (if (not package)
       (when interactive
@@ -348,8 +350,8 @@ Only run BODY if they could be loaded."
 (defmacro packages/define (feature-name deps &rest body)
   "Define a feature FEATURE-NAME that depends on DEPS, with code BODY."
   `(packages/requires ,deps
-		      ,@body
-		      (provides ,feature-name)))
+     ,@body
+     (provides ,feature-name)))
 (put 'packages/define 'lisp-indent-function 1)
 
 (provides packages)

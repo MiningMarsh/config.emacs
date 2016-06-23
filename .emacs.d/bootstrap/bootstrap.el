@@ -53,7 +53,7 @@
 (defun bootstrap/-compile-and-load (path compiled &optional load ignore-includes)
   "Compile PATH to COMPILED, and optionally load it if LOAD is set.
 If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
-  ;; (message "Compiling/loading %s to %s" path compiled)
+  (message "Loading %s..." path)
   (if (not (bootstrap/-needs-recompile? path compiled))
       ;; Otherwise, just load the compiled file if requested.
       (when load (load-file compiled))
