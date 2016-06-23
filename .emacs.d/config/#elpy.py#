@@ -1,5 +1,0 @@
-;;; elpy --- Better emacs python development environment.
-;;; Commentary:
-;;; Code:
-(packages/requires (elpy)
-(
