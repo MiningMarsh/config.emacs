@@ -1,7 +1,6 @@
 ;;; headers --- Pretty headers.
 ;;; Commentary:
 ;;; Code:
-
 (let*
     ((variable-tuple
       (cond ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
@@ -26,5 +25,4 @@
    `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
    `(org-document-title
      ((t (,@headline ,@variable-tuple :height 1.5 :underline nil))))))
-
 ;;; headers.el ends here
