@@ -384,7 +384,8 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
 	(partition 2 sets))))
 
 (defun ! (command)
-  "Run shell COMMAND, producing a message with leading and trailing whitespace stripped."
+  "Run shell COMMAND, producing a message with leading and trailing whitespace
+stripped."
   (let ((result (-> command shell-command-to-string trim-string)))
     (when (and result (> (length result) 0))
       (message "%s" result))))
@@ -394,7 +395,8 @@ Stolen from: http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html"
 	      (last-gc-average 0.0))
   (defun running-gc-time (&optional print-message)
     (interactive "p")
-    "Return the current average time needed to perform a garbage collect."
+    "Return the current average time needed to perform a garbage collect, since
+the last time this function was called."
     (when (< last-gcs-done gcs-done)
       (setq last-gc-average
 	    (/ (- (float gc-elapsed) (float last-gc-elapsed))
@@ -546,19 +548,6 @@ using COMPARE-FN."
      (interactive)
      ,@body))
 
-(defun start-music ()
-  "Start the freedom chant."
-  (interactive)
-  (start-process-shell-command
-   "music"
-   "music"
-   "mplayer /home/miningmarsh/.emacs.d/stallman.mp3 -loop 0"))
-
-(defun stop-music ()
-  "Stop the freedome chant."
-  (interactive)
-  (kill-process "music"))
-
 (defmacro guard (var &rest body)
   "Set VAR to `t` if it is `nil`, and run BODY if var is `nil`."
   (with-gensym
@@ -574,7 +563,8 @@ using COMPARE-FN."
        (,fn ,@args)))
 
 (defmacro only-once (&rest body)
-  "Ensure that BODY is only run once."
+  "Ensure that BODY is only run once.
+Note that the return value of BODY is cached."
   (with-gensyms
    (once result)
    `(unless (boundp (quote ,once))
@@ -583,8 +573,22 @@ using COMPARE-FN."
       ,result)))
 
 (defun remove-all (values list)
-  "Remove all instances of any element of VALUES from LIST, functionally."
+  "Remove all instances of any element of VALUES from LIST."
   (cl-remove-if (lambda (n) (member n values)) list))
+
+(defun delete-all (values list)
+  "Delete all instances of any element of VALUES from LIST."
+  (cl-delete-if (lambda (n) (member n values)) list))
+
+(defun add (value list)
+  "Add VALUE to LIST if it is not already a member."
+  (if (member value list)
+      list
+    (cons value list)))
+
+(defun add-all (values list)
+  "Add VALUES to LIST if they is not already members."
+  (union list values))
 
 ;; Signal that RC has been loaded.
 (provide 'rc)
