@@ -2,9 +2,11 @@
 ;;; Commentary:
 ;;; This includes global evil keybindings.
 ;;; Code:
+
+;;; TODO: Figure out a better way to handle user macro libraries.
 (eval-when-compile (require 'key-tree))
 
-(packages/requires (evil evil-leader key-chord ranger key-tree os mac)
+(packages/requires (evil evil-leader key-chord ranger key-tree)
 
 		   ;; Free up space and ret in normal mode.
 		   (dolist (key (list (kbd "RET") " "))
@@ -16,7 +18,9 @@
 		    e ("Emacs"
 		       c "Run Command" 'smex
 		       b "Bind Symbol" 'bind-symbol
-		       s "Get Symbol" 'retrieve-symbol)
+		       s "Get Symbol" 'retrieve-symbol
+		       v "Get Version" 'emacs-version
+		       q "Quit Emacs" 'kill-emacs)
 
 		    f ("File"
 		       f "Find File" 'find-file
@@ -43,6 +47,9 @@
 			  f "Find and Kill Buffer" 'ido-kill-buffer))
 
 		    w ("Window"
+		       r ("Resize Window"
+			  k "Increase Height" 'evil-window-increase-height
+			  j "Decrease Height" 'evil-window-decrease-height)
 		       S ("Split Window"
 			  "h" "Split Window Horizontally" 'split-window-below
 			  "v" "Split Window Vertically" 'split-window-right)
@@ -69,7 +76,7 @@
 		       p "Position" 'describe-char
 		       v "Variable" 'describe-variable)
 
-		    F ("Feature"
+		    F ("Features"
 		       i "Install" 'package-install
 		       u "Upgrade" 'packages/upgrade
 		       I "Install and Upgrade" 'packages/install-or-upgrade-if-needed
@@ -77,23 +84,13 @@
 		       R "Remove Outdated Versions" 'packages/uninstall-outdated
 		       l "Load" (lambda (package)
 				  (-> (completing-read "Load Feature: "
-						       features
+						       (remove-all
+							package-activated-list
+							features)
 						       (lambda (&rest args) t)
 						       t)
 				      intern-soft
 				      list
 				      interactive)
-				  (require package))))
-
-		   (os/when-mac
-		    (key-tree/add-bindings
-		     o ("Operating System"
-			a ("Account"
-			   "l" "Lock" (interactively (mac/lock-account))
-			   "L" "Log Out" (interactively (mac/log-out)))
-
-			p ("Power"
-			   "s" "Sleep" (interactively (mac/sleep))
-			   "S" "Shutdown" (interactively (mac/shutdown))
-			   "r" "Restart" (interactively (mac/restart)))))))
+				  (require package)))))
 ;;; keybinds.el ends here

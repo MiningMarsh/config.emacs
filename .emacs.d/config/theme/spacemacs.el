@@ -4,8 +4,8 @@
 (packages/requires (spacemacs-theme
                     spaceline
                     spaceline-segments
-                    spaceline-config)
-                    ;;solarized-theme
+                    spaceline-config
+                    solarized-theme)
                     ;;color-theme-solarized
 
   ;; This needs to be set before the theme is loaded for things
@@ -30,6 +30,5 @@
     (lambda (frame)
       (set-frame-parameter frame 'background-mode 'dark)
       (set-terminal-parameter frame 'background-mode 'dark)
-      (load-theme 'solarized-dark t)
-      )))
+      (load-theme 'solarized-dark t))))
 ;;; spacemacs.el ends here

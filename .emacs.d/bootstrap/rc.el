@@ -582,6 +582,10 @@ using COMPARE-FN."
       (setq ,once t)
       ,result)))
 
+(defun remove-all (values list)
+  "Remove all instances of any element of VALUES from LIST, functionally."
+  (cl-remove-if (lambda (n) (member n values)) list))
+
 ;; Signal that RC has been loaded.
 (provide 'rc)
 ;;; rc.el ends here
