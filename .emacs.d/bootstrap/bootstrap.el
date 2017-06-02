@@ -66,10 +66,13 @@ the results."
 (defun bootstrap/-compile-and-load (path compiled &optional load ignore-includes)
 "Compile PATH to COMPILED, and optionally load it if LOAD is set.
 If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
-  (message "Loading %s..." path)
+  (when load
+    )
   (if (not (bootstrap/-needs-recompile? path compiled))
       ;; Otherwise, just load the compiled file if requested.
-      (when load (load-file compiled))
+      (when load
+	(message "Loading %s..." path)
+	(load-file compiled))
 
     ;; Prepend the config if needed.
     (unless ignore-includes
@@ -87,23 +90,29 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
       (bootstrap/-with-finally
         (progn
 
-      ;; Compile the file and load if needed.
-      (byte-compile-file path load)
+	  ;; Signal that we are compiling or loading.
+	  (if load
+	      (message "Loading %s..." path)
+	    (message "Compiling %s..." path))
 
-      ;; If the requested compile path is not the same as the local compiled
-      ;; path, move the newly generated file to the correct place.
-      (when (not (string= compiled local))
+          ;; Compile the file and load if needed.
+          (byte-compile-file path load)
 
-      ;; Delete the requested file if we are replacing it.
-      (when (file-exists-p compiled)
-        (delete-file compiled))
+          ;; If the requested compile path is not the same as the local compiled
+          ;; path, move the newly generated file to the correct place.
+          (when (not (string= compiled local))
 
-      ;; Move the newly compiled file.
-      (rename-file local compiled)))
+          ;; Delete the requested file if we are replacing it.
+          (when (file-exists-p compiled)
+            (delete-file compiled))
+
+          ;; Move the newly compiled file.
+          (rename-file local compiled)))
 
       ;; Delete the temp file if needed.
       (unless ignore-includes
         (delete-file path)
+
       (when (file-exists-p local)
         (delete-file local)))))))
 
@@ -176,6 +185,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
             (make-directory path)))
         '("compiled"
           "lib"
+	  "theme"
           "persistent"
           "config"))
 
