@@ -262,12 +262,12 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 		 ";;;"
 		 ";;; Startup took %f seconds."
 		 ";;;"
-		 ";;; There are %d packages installed."
-		 ";;; ➡ There are %d builtin packages installed."
-		 ";;; ➡ There are %d user-requested packages installed."
-		 ";;; ➡ %d packages were added on startup."
-		 ";;; ➡ %d packages were upgraded on startup."
-		 ";;; ➡ %d packages were removed on startup.")
+		 ";;; There are %d packages installed:"
+		 ";;; - There are %d builtin packages installed."
+		 ";;; - There are %d user-requested packages installed."
+		 ";;; - %d packages were added on startup."
+		 ";;; - %d packages were upgraded on startup."
+		 ";;; - %d packages were removed on startup.")
 		bootstrap/startup-time
 		combinedp
 		systemp

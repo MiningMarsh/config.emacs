@@ -26,9 +26,13 @@
   (spaceline-toggle-erc-track-on)
   (spaceline-toggle-battery-off)
 
+  (set-face-attribute 'mode-line nil :underline nil)
+  (set-face-attribute 'mode-line-inactive nil :underline nil)
   (add-hook 'after-make-frame-functions
-    (lambda (frame)
-      (set-frame-parameter frame 'background-mode 'dark)
-      (set-terminal-parameter frame 'background-mode 'dark)
-      (load-theme 'solarized-dark t))))
+	    (lambda (frame)
+	      (set-frame-parameter frame 'background-mode 'dark)
+	      (set-terminal-parameter frame 'background-mode 'dark)
+	      (load-theme 'solarized-dark t)
+	      (set-face-attribute 'mode-line nil :underline nil)
+	      (set-face-attribute 'mode-line-inactive nil :underline nil))))
 ;;; spacemacs.el ends here
