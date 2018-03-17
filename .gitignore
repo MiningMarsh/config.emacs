@@ -9,7 +9,7 @@
 !.emacs.d/lib/*
 !.emacs.d/theme/*
 !.gitignore
-!.stow-global-ignore
+!.stow-local-ignore
 !.emacs.d/init.el
 !*.el
 !*.el.disabled
