@@ -23,17 +23,17 @@
 (defmacro requires (&rest libs)
   "Let you require multiple LIBS without quoting them."
   `(mapc (symbol-function 'require)
-	 (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
+    (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
 
 (defmacro provides (&rest libs)
   "Let you provide multiple LIBS without quoting them."
   `(mapc (symbol-function 'provide)
-	 (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
+    (list ,@(mapcar (lambda (lib) `(quote ,lib)) libs))))
 
 (defun mklist (thing)
   "Ensure THING is a list."
   (if (listp thing)
-      thing
+    thing
     (list thing)))
 
 (defun compiled-file-path (path)
@@ -43,16 +43,16 @@
 (cl-defmacro save-buffer-info (&rest body)
   "Saves information about the current buffer, runs body, and restores info."
   `(save-excursion
-     (save-restriction
-       ,@body)))
+    (save-restriction
+      ,@body)))
 
 (defun buffer-starts-with (regex)
   "Return whether the current buffer start with REGEX."
   (save-buffer-info
-   (widen)
-   (goto-char (point-min))
-   (save-match-data
-     (looking-at regex))))
+    (widen)
+    (goto-char (point-min))
+    (save-match-data
+      (looking-at regex))))
 
 (defun buffer-is-script ()
   "Return whether the current buffer is a script."
@@ -61,7 +61,7 @@
 (cl-defmacro let1 (var value &rest body)
   "Makes reading a single let easier."
   `(let ((,var ,value))
-     ,@body))
+    ,@body))
 
 (defun mappend (fn &rest args)
   "Like mapcan, but uses append instead of nconc."
@@ -70,7 +70,7 @@
 (defun to-list (thing)
   "Converts a thing into a list."
   (if (listp thing)
-      (cl-copy-list thing)
+    (cl-copy-list thing)
     (list thing)))
 
 (defun flatten-once (tree)
@@ -80,11 +80,11 @@
 (defun flatten (tree)
   "Fully flatten TREE."
   (mappend
-   (lambda (thing)
-     (if (listp thing)
-	 (flatten thing)
-       (list thing)))
-   tree))
+    (lambda (thing)
+      (if (listp thing)
+        (flatten thing)
+        (list thing)))
+     tree))
 
 (defun emptyp (sequence)
   "Checks if a sequence is empty."
@@ -93,78 +93,118 @@
 (defun partition (length list)
   "Partitions a list."
   (loop
-   while list
-   collect (cl-subseq list 0 length)
-   do (setf list (nthcdr length list))))
+    while list
+    collect (cl-subseq list 0 length)
+    do (setf list (nthcdr length list))))
 
 (defmacro assoc-map (&rest map-list)
   "Makes writing assoc lists nicer."
   `(list
     ,@(mapcar
-       (lambda (e) `(cons ,(car e) ,(cadr e)))
-       (partition 2 map-list))))
+      (lambda (e) `(cons ,(car e) ,(cadr e)))
+      (partition 2 map-list))))
 
 (defmacro var-map (&rest map-list)
   "Makes writing variable mappings nicer."
   `(list
     ,@(mapcar
-       (lambda (e) `(cons (quote ,(car e)) ,(cadr e)))
-       (partition 2 map-list))))
+      (lambda (e) `(cons (quote ,(car e)) ,(cadr e)))
+      (partition 2 map-list))))
 
 (defun apply-var-map (var-map)
   "Sets the var map given."
-  (mapc (lambda (mapping) (set (car mapping) (cdr mapping)))
-	var-map))
+  (mapc
+    (lambda (mapping)
+      (set (car mapping) (cdr mapping)))
+    var-map))
 
 (defmacro with-gensyms (syms &rest body)
   "Evalutes body with the given symbols bound to gensyms."
-  `(let
-       ,(mapcar
-	 (lambda (sym) `(,sym (cl-gensym)))
-	 syms)
-     ,@body))
+  `(let ,(mapcar
+          (lambda (sym)
+            `(,sym (cl-gensym)))
+          syms)
+    ,@body))
 
 (defmacro with-lexical (syms &rest body)
   "Make the bindings of SYMS lexical, then execute BODY."
   `(lexical-let ,(mapcar
-		  (lambda (sym) (list sym sym))
-		  syms)
-     ,@body))
+                  (lambda (sym) (list sym sym))
+                  syms)
+    ,@body))
 
 (defmacro with-gensym (sym &rest body)
   "Easier to read than with-gensyms for one var."
   `(with-gensyms (,sym)
-		 ,@body))
+    ,@body))
 
 (cl-defmacro bind-head-tail ((head tail) list-expr &rest body)
   "Anaphoric macro that binds the car and cdr of a list to specified atoms.
    This is used often."
+
   ;; Used so we only evaluate the list once.
   (with-gensym result
-	       `(let* ((,result ,list-expr)
-		       (,head (car ,result))
-		       (,tail (cdr ,result)))
-		  ,@body)))
+    `(let* ((,result ,list-expr)
+            (,head (car ,result))
+            (,tail (cdr ,result)))
+      ,@body)))
+
+(cl-defmacro bind-pop (sym list-sym &rest body)
+  `(bind-head-tail (,sym ,list-sym) ,list-sym
+    ,@body))
 
 (cl-defmacro -> (&rest exprs)
   "Threading macro ported from clojure."
-  (bind-head-tail (first rest) exprs
-		  (if (not rest)
-		      first
-		    (bind-head-tail (second rest) rest
-				    (if (listp second)
-					`(-> (,(car second) ,first ,@(cdr second)) ,@rest)
-				      `(-> (,second ,first) ,@rest))))))
+
+  ;; Grab the first two expressions. If only one expression exists, go ahead and
+  ;; just yield that.
+  (bind-pop first-expr exprs
+    (if (not exprs)
+      first-expr
+      (bind-pop second-expr exprs
+
+        ;; Figure out whether the first expression needs to be inserted into
+        ;; an existing expression or fed into the second as if it is a function
+        ;; symbol.
+        (if (listp second-expr)
+
+          ;; Append the first expression as the second parameter in whatever
+          ;; the second expression is. We recurse here to handle any further
+          ;; expressions in the list.
+          `(-> (,(car second-expr)
+               ,first-expr
+               ,@(cdr second-expr))
+               ,@exprs)
+
+          ;; Call the second expression using the first expression. We recurse
+          ;; here to handle any remaining expressions.
+          `(-> (,second-expr ,first-expr)
+               ,@exprs))))))
 
 (cl-defmacro ->> (&rest exprs)
   "Threading macro ported from clojure."
-  (bind-head-tail (first rest) exprs
-		  (if (not rest)
-		      first
-		    (bind-head-tail (second rest) rest
-				    (if (listp second)
-					`(->> (,@second ,first) ,@rest)
-				      `(->> (,second ,first) ,@rest))))))
+
+  ;; Grab the first two expressions. If only one expression exists, go ahead and
+  ;; just yield that.
+  (bind-pop first-expr exprs
+    (if (not exprs)
+      first-expr
+      (bind-pop second-expr exprs
+
+        ;; Figure out whether the first expression needs to be appended into
+        ;; an existing expression or fed into the second as if it is a function
+        ;; symbol.
+        (if (listp second-expr)
+
+          ;; Just append to the second expression. We recurse here to handle any
+          ;; further expressions in the list.
+          `(->> (,@second-expr ,first-expr)
+                ,@exprs)
+
+          ;; Call the second expression using the first expression. We recurse
+          ;; here to handle any remaining expressions.
+          `(->> (,second-expr ,first-expr)
+                ,@exprs))))))
 
 (defmacro locals (&rest exprs)
   "Makes using an interior function definition easier than with labels
@@ -520,8 +560,8 @@ the last time this function was called."
 (defun config-file (filename)
   "Generate a persistent FILENAME that can be used to store configuration data."
   (format "%s/.emacs.d/persistent/%s"
-	  (getenv "HOME")
-	  filename))
+    (getenv "HOME")
+    filename))
 
 (cl-defun wall (arg fn &optional (compare-fn 'equal))
   "Repeatably pass ARG to FN.  Set ARG to the result of the next FN call.
@@ -592,4 +632,5 @@ Note that the return value of BODY is cached."
 
 ;; Signal that RC has been loaded.
 (provide 'rc)
+
 ;;; rc.el ends here

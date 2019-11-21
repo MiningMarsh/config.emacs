@@ -4,6 +4,7 @@
 ;;; ~/.emacs.d/lib as a library path for require.  The files are loaded in sorted
 ;;; order by name.  Also loads ~/.emacs.d/rc.el before everything else.
 ;;; Code:
+
 ;; We use a bunch of the CL compatibility functions to make this file a bit
 ;; shorter.
 (require 'cl-lib)
@@ -29,7 +30,8 @@ the results."
 ;; Used so that we can map our load function over the entire config directory,
 ;; etc.
 (defun bootstrap/-map-dir (fn dir)
-"Maps the function FN over directory DIR."
+"Maps the function FN over directory DIR. The function will not be mapped over
+the special nodes '..' or '.'."
   (funcall fn dir)
   (dolist (path (bootstrap/-directory-files-ignoring-implicit dir))
     (if (file-directory-p path)
@@ -41,22 +43,33 @@ the results."
   (or (not (file-exists-p compiled))
       (file-newer-than-file-p path compiled)))
 
+;; The rc library contains a version of this, this is kept here as the
+;; bootstrapper does not have access to rc.
 (defmacro bootstrap/-with-finally (fn &rest body)
 "Ignore errors in the wrapped FN, executing BODY as finally."
+
   `(unwind-protect
+     ;; This let is used purely as temporary storage.
      (let (retval)
        (condition-case ex
+
+	 ;; Do nothing except attempt to run the code and record its response.
          (setq retval (progn ,fn))
-       ('error
-         (setq retval nil)))
+
+	 ;; If an error has been signalled, Don't return anything.
+         ('error
+           (setq retval nil)))
+
+       ;; Return the result if we were able to record one.
        retval)
+
+     ;; Run the body of the finally block, regardless of the result of our
+     ;; execution.
      ,@body))
 
 (defun bootstrap/-prepend-require (path)
-"Prepend requires to PATH in a temp file, return the temp file path."
-  (let ((temp-file (make-temp-file "emacs-config-file-")))
-    (delete-file temp-file)
-    (setq temp-file (concat temp-file ".el"))
+"Prepend all.el requires to PATH in a temp file, return the temp file path."
+  (let ((temp-file (make-temp-file "emacs-config-file-" nil ".el")))
     (with-temp-file temp-file
       (insert-file-contents path)
       (goto-char (point-min))
@@ -67,10 +80,12 @@ the results."
 "Compile PATH to COMPILED, and optionally load it if LOAD is set.
 If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
   (if (not (bootstrap/-needs-recompile? path compiled))
-      ;; Otherwise, just load the compiled file if requested.
+
+      ;; No need to recompile, just load the compiled file if a load was
+      ;; requested.
       (when load
-	(message "Loading %s..." path)
-	(load-file compiled))
+        (message "Loading %s..." path)
+        (load-file compiled))
 
     ;; Prepend the config if needed.
     (unless ignore-includes
@@ -251,28 +266,32 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
 ;; Print stats to user
 (let ((userp (length package-alist))
-      (systemp (length package--builtins))
       (combinedp
-       (length
-	(remove-duplicates
-	 (mapcar 'car (append package-alist package--builtins))))))
-  (setq initial-scratch-message
-	(format (bootstrap/-concat-message
-		 ";;; This buffer is for quick Emacs Lisp code."
-		 ";;;"
-		 ";;; Startup took %f seconds."
-		 ";;;"
-		 ";;; There are %d packages installed:"
-		 ";;; - There are %d builtin packages installed."
-		 ";;; - There are %d user-requested packages installed."
-		 ";;; - %d packages were added on startup."
-		 ";;; - %d packages were upgraded on startup."
-		 ";;; - %d packages were removed on startup.")
-		bootstrap/startup-time
-		combinedp
-		systemp
-		userp
-		packages/installed
-		packages/upgraded
-		packages/removed)))
+        (length
+          (remove-duplicates
+            (mapcar
+              'car
+              (append package-alist package--builtins)))))
+      (systemp (length package--builtins)))
+  (setq
+    initial-scratch-message
+    (format
+      (bootstrap/-concat-message
+        ";;; This buffer is for quick Emacs Lisp code."
+        ";;;"
+        ";;; Startup took %f seconds."
+        ";;;"
+        ";;; There are %d packages installed:"
+        ";;; - There are %d builtin packages installed."
+        ";;; - There are %d user-requested packages installed."
+        ";;; - %d packages were added on startup."
+        ";;; - %d packages were upgraded on startup."
+        ";;; - %d packages were removed on startup.")
+      bootstrap/startup-time
+      combinedp
+      systemp
+      userp
+      packages/installed
+      packages/upgraded
+      packages/removed)))
 ;;; bootstrap.el ends here

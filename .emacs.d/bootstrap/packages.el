@@ -5,12 +5,15 @@
 
 (requires cl cl-lib package)
 
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+(setq package-check-signature nil)
+
 ;; Add package repositories.
 (setq package-archives
-      (assoc-map "melpa-stable" "https://stable.melpa.org/packages/"
-		 "marmalade"    "https://marmalade-repo.org/packages/"
-		 "gnu"          "https://elpa.gnu.org/packages/"
-		 "melpa"        "https://melpa.org/packages/"))
+  (assoc-map "melpa-stable" "https://stable.melpa.org/packages/"
+             "marmalade"    "https://marmalade-repo.org/packages/"
+             "gnu"          "http://elpa.gnu.org/packages/"
+             "melpa"        "https://melpa.org/packages/"))
 
 ;; Init package subsystem.
 (package-initialize)
@@ -37,15 +40,16 @@
 
 ;; Hook that updates a cache timestamp after updates.
 (advice-add 'package-refresh-contents
-	    :after
-	    (lambda (&rest args)
+  :after
+  (lambda (&rest args)
 
-	      ;; Signal that we refreshed.
-	      (setq packages/-already-refreshed t)
+    ;; Signal that we refreshed.
+    (setq packages/-already-refreshed t)
 
-	      ;; Print a timestamp to the cache file.
-	      (to-file (config-file "last-updated")
-		       (decode-time))))
+      ;; Print a timestamp to the cache file.
+      (to-file
+        (config-file "last-updated")
+        (decode-time))))
 
 (defun packages/-refresh-contents-if-needed ()
   "Refresh package contents if not already refreshed."
@@ -53,19 +57,18 @@
   ;; Only refresh if we have never refreshed, or haven't refreshed for at least
   ;; a day.
   (when (or
+          ;;First check if we ever refreshed.
+          (not (-> "last-updated"
+                   config-file
+                   file-exists-p))
 
-	 ;;First check if we ever refreshed.
-	 (not (-> "last-updated"
-		  config-file
-		  file-exists-p))
-
-	 ;; Second, check if the last update time was more than a day ago.
-	 (not (=  (-> (decode-time)
-		      cl-fourth)
-		  (-> "last-updated"
-		      config-file
-		      read-file-last
-		      cl-fourth))))
+          ;; Second, check if the last update time was more than a day ago.
+          (not (=  (-> (decode-time)
+                       cl-fourth)
+                   (-> "last-updated"
+                       config-file
+                       read-file-last
+                       cl-fourth))))
 
     ;; Refresh the package contents database.
     (with-temp-message "Refreshing package contents database..."
