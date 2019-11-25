@@ -14,6 +14,13 @@
 ;; running with a bootstrapper.
 (provide 'bootstrap)
 
+;; Ensure that custom changes occur in a well known place that isn't touching initl.el.
+(setq custom-file (concat (getenv "HOME") "/.emacs.d/custom.el"))
+
+;; We need to do this early to prevent our init.el from being polluted with
+;; package-initialize.
+(setq package--init-file-ensured t)
+
 ;; This is provided primarily so that the custom package manager can clean
 ;; orphaned packages after startup.
 (defvar bootstrap/after-config-hook nil
@@ -139,7 +146,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 "Compile PATH and load it if LOAD is set.  Add libraries if not BOOTSTRAP."
   (bootstrap/-compile-and-load path (concat path "c") load bootstrap))
 
-(defmacro bootstrap/-concat-message (&rest strs)
+(defun bootstrap/-concat-message (&rest strs)
 "Helper function used to format the scratch buffer message.  Concats STRS."
   (concat (cl-reduce (lambda (l r) (concat l "\n" r)) strs)
     "\n"))
@@ -151,7 +158,7 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
 (defun bootstrap/-cached-path (path)
 "Return the cache version of PATH."
-  (format "~/.emacs.d/compiled/%sc"
+  (format (concat (getenv "HOME") "/.emacs.d/compiled/%sc")
     (replace-regexp-in-string "/" "!" path)))
 
 (defun bootstrap/-compile-and-cache-file (path &optional load)
@@ -189,7 +196,10 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 (bootstrap/-record-elapsed-time bootstrap/startup-time
 
   ;; Only recompile the init file if needed.
-  (bootstrap/-compile-file "~/.emacs.d/init.el" nil t)
+  (bootstrap/-compile-file (concat (getenv "HOME") "/.emacs.d/init.el") nil t)
+
+  ;; Only recompile the bootstrap file if needed.
+  (bootstrap/-compile-file (concat (getenv "HOME") "/.emacs.d/bootstrap/bootstrap.el") nil t)
 
   ;; Make needed directories.
   (mapc (lambda (path)
@@ -251,9 +261,13 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
        (bootstrap/-compile-and-cache-file path t))))
   "~/.emacs.d/config/")
 
- ;; Run post config hooks.
- (dolist (hook bootstrap/after-config-hook)
-   (funcall hook)))
+  ;; Load any custom changes the user has saved.
+  (when (file-exists-p custom-file)
+    (bootstrap/-compile-and-cache-file custom-file 't))
+
+  ;; Run post config hooks.
+  (dolist (hook bootstrap/after-config-hook)
+    (funcall hook)))
 
 ;; Clear the message buffer.
 (message "")
@@ -266,12 +280,10 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
 
 ;; Print stats to user
 (let ((userp (length package-alist))
-      (combinedp
-        (length
-          (remove-duplicates
-            (mapcar
-              'car
-              (append package-alist package--builtins)))))
+      (combinedp (length
+		  (remove-duplicates
+		   (mapcar 'car
+		    (append package-alist package--builtins)))))
       (systemp (length package--builtins)))
   (setq
     initial-scratch-message
@@ -284,9 +296,15 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
         ";;; There are %d packages installed:"
         ";;; - There are %d builtin packages installed."
         ";;; - There are %d user-requested packages installed."
-        ";;; - %d packages were added on startup."
-        ";;; - %d packages were upgraded on startup."
-        ";;; - %d packages were removed on startup.")
+        (if (= 1 packages/installed)
+          ";;; - %d package was added on startup."
+	  ";;; - %d packages were added on startup.")
+        (if (= 1 packages/upgraded)
+	  ";;; - %d package was upgraded on startup."
+	  ";;; - %d packages were upgraded on startup.")
+        (if (= 1 packages/removed)
+	  ";;; - %d package was removed on startup."
+	  ";;; - %d packages were removed on startup."))
       bootstrap/startup-time
       combinedp
       systemp
@@ -294,4 +312,5 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
       packages/installed
       packages/upgraded
       packages/removed)))
+
 ;;; bootstrap.el ends here
