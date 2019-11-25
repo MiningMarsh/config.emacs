@@ -13,7 +13,8 @@
 	     (flycheck-mode 't)
 	     (column-enforce-mode 't)
 	     (flyspell-mode 't)
-	     (auto-fill-mode 't))
+	     (set-fill-column 80)
+	     (refill-mode 't))
 
   (key-tree/add-mode-bindings
    markdown-mode
