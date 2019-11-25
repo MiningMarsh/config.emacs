@@ -14,5 +14,6 @@
 !.emacs.d/theme/*
 !.gitignore
 !.stow-local-ignore
+.emacs.d/custom.el
 *.elc
 .emacs.d/config/erc/accounts.el
