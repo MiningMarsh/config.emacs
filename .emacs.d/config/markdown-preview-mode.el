@@ -6,9 +6,8 @@
 (packages/requires (key-tree
 		    markdown-mode
 		    markdown-preview-mode
-		    flyspell-mode
-		    flycheck-mode
-		    auto-fill-mode)
+		    column-enforce-mode
+		    flycheck)
 
   (add-hooks (markdown-mode)
 	     (flycheck-mode 't)
