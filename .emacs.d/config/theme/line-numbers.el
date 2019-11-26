@@ -40,5 +40,5 @@
   ;; Set the funtion we use to format our number in absolute mode.
   (setq linum-format (lambda (line)
     (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
-  (propertize (format (format "%%%dd " w) line) 'face 'linum)))))
+  (propertize (format (format " %%%dd " w) line) 'face 'linum)))))
 ;;; line-numbers.el ends here
