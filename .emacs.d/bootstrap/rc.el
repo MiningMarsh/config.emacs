@@ -605,8 +605,7 @@ using COMPARE-FN."
 (defmacro only-once (&rest body)
   "Ensure that BODY is only run once.
 Note that the return value of BODY is cached."
-  (with-gensyms
-   (once result)
+  (with-gensyms (once result)
    `(unless (boundp (quote ,once))
       (setq ,result (progn ,@body))
       (setq ,once t)

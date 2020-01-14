@@ -94,47 +94,50 @@ If IGNORE-INCLUDES is set, don't prepend (require 'all) to the file."
         (message "Loading %s..." path)
         (load-file compiled))
 
-    ;; Prepend the config if needed.
-    (unless ignore-includes
-      (setq path (bootstrap/-prepend-require path)))
+    ;; Save the original path we want to print regardless.
+    (let ((print-path path))
 
-    ;; Generate the local compiled path.
-    (let ((local (concat path "c")))
+	 ;; Prepend the config if needed.
+	 (unless ignore-includes
+	   (setq path (bootstrap/-prepend-require path)))
 
-      ;; When the compiled file already exists, remove it to prevent a file
-      ;; conflict.
-      (when (file-exists-p local)
-        (delete-file local))
+	 ;; Generate the local compiled path.
+	 (let ((local (concat path "c")))
 
-      ;; Ensure that the temp files are always deleted.
-      (bootstrap/-with-finally
-        (progn
+	   ;; When the compiled file already exists, remove it to prevent a file
+	   ;; conflict.
+	   (when (file-exists-p local)
+	     (delete-file local))
 
-	  ;; Signal that we are compiling or loading.
-	  (if load
-	      (message "Loading %s..." path)
-	    (message "Compiling %s..." path))
+	   ;; Ensure that the temp files are always deleted.
+	   (bootstrap/-with-finally
+	    (progn
 
-          ;; Compile the file and load if needed.
-          (byte-compile-file path load)
+	      ;; Signal that we are compiling or loading.
+	      (if load
+		  (message "Loading %s..." print-path)
+		(message "Compiling %s..." print-path))
 
-          ;; If the requested compile path is not the same as the local compiled
-          ;; path, move the newly generated file to the correct place.
-          (when (not (string= compiled local))
+	      ;; Compile the file and load if needed.
+	      (byte-compile-file path load)
 
-          ;; Delete the requested file if we are replacing it.
-          (when (file-exists-p compiled)
-            (delete-file compiled))
+	      ;; If the requested compile path is not the same as the local compiled
+	      ;; path, move the newly generated file to the correct place.
+	      (when (not (string= compiled local))
 
-          ;; Move the newly compiled file.
-          (rename-file local compiled)))
+		;; Delete the requested file if we are replacing it.
+		(when (file-exists-p compiled)
+		  (delete-file compiled))
 
-      ;; Delete the temp file if needed.
-      (unless ignore-includes
-        (delete-file path)
+		;; Move the newly compiled file.
+		(rename-file local compiled)))
 
-      (when (file-exists-p local)
-        (delete-file local)))))))
+	    ;; Delete the temp file if needed.
+	    (unless ignore-includes
+	      (delete-file path)
+
+	      (when (file-exists-p local)
+		(delete-file local))))))))
 
 (defun bootstrap/-elisp-file? (path)
 "Check if PATH is an elisp file."
