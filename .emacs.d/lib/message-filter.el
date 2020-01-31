@@ -22,12 +22,12 @@
     (if (not format-string)
 
       ;; Make sure not to forget to pass the extra arguments through.
-      (apply #'message (const nil args))
+      (apply #'message (cons nil args))
 
       ;; Create the formatted string we want to message, ahead of time, so that
       ;; we can test if it is blacklisted. As well, keep an accumulator of
       ;; changes.
-      (let result (apply 'format (cons format-string args))
+      (let ((result (apply 'format (cons format-string args))))
 
         ;; Loop through every filter we want to test.
         (dolist (filter-map message-filter/filters)
